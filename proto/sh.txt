@@ -1,0 +1,1 @@
+protoc --csharp_out=..\Gen\Gen.Messages --csharp_opt=file_extension=.g.cs .\protos\*.*
