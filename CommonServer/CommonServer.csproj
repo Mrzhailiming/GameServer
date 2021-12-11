@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Base\Base.csproj" />
-    <ProjectReference Include="..\CommonProtocol\CommonProtocol.csproj" />
     <ProjectReference Include="..\Gen\Gen.csproj" />
     <ProjectReference Include="..\Server\Handler.csproj" />
   </ItemGroup>
