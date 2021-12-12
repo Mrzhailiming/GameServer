@@ -5,8 +5,9 @@ using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using System;
 using System.IO;
+using System.Threading;
 
-namespace Server
+namespace Handler
 {
     public class ClientHandler : SimpleChannelInboundHandler<CommonMessage>
     {
@@ -53,6 +54,8 @@ namespace Server
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
         {
             Console.WriteLine("send success");
+
+            Thread.Sleep(100000000);
             TestSend(ctx);
         }
     }

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Factorial.Client
+namespace Client
 {
     using System;
     using System.IO;
@@ -9,13 +9,15 @@ namespace Factorial.Client
     using System.Net.Security;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Base;
+    using Base.Tick;
     using CommonProtocol;
     using DotNetty.Handlers.Logging;
     using DotNetty.Handlers.Tls;
     using DotNetty.Transport.Bootstrapping;
     using DotNetty.Transport.Channels;
     using DotNetty.Transport.Channels.Sockets;
-    using Server;
+    using Handler;
 
     class Program
     {
@@ -52,6 +54,19 @@ namespace Factorial.Client
             }
         }
 
-        public static void Main() => RunClientAsync().Wait();
+
+        public static void Main()
+        {
+            InitClient();
+
+            RunClientAsync().Wait();
+        }
+
+        public static void InitClient()
+        {
+            TickManager.Instance().Init(); 
+
+            CmdHelper.Init();
+        }
     }
 }

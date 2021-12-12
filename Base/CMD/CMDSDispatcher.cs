@@ -7,11 +7,19 @@ using System.Threading;
 namespace Base
 {
 
-    public static class MyTimer
+    public class MyTimer
     {
-        private static Stopwatch timer = null;
-        private static object mutex = new object();
-        public static bool Tick
+        private Stopwatch timer = null;
+        private object mutex = new object();
+
+        private int mMnterval;
+
+        public MyTimer(int interval)
+        {
+            mMnterval = interval;
+        }
+
+        public bool Tick
         {
             get
             {
@@ -26,10 +34,10 @@ namespace Base
                         }
                     }
                 }
-                else if(timer.Elapsed.Seconds - cur > 1)
+                else if(timer.ElapsedMilliseconds - cur > mMnterval)
                 {
-                    cur = timer.Elapsed.Seconds;
-                    Console.WriteLine($"process task num * s {CMDSDispatcher.num}");
+                    Console.WriteLine($"DoFunc 间隔{timer.ElapsedMilliseconds - cur}");
+                    cur = timer.ElapsedMilliseconds;
                     return true;
                 }
 
@@ -40,7 +48,7 @@ namespace Base
 
             }
         }
-        public static double cur = 0;
+        public double cur = 0;
     }
 
     internal class Task
@@ -49,11 +57,14 @@ namespace Base
         private CommonClient mClient;
         private CommonMessage mMessage;
 
+        private MyTimer mMyTimer;
         public Task(Action<CommonClient, CommonMessage> action, CommonClient client, CommonMessage message)
         {
             mAction = action;
             mClient = client;
             mMessage = message;
+
+            mMyTimer = new MyTimer(1000);
         }
 
         public void DoAction()
@@ -63,7 +74,12 @@ namespace Base
                 mAction.Invoke(mClient, mMessage);
                 //Console.WriteLine($"Task.DoAction() Success:\r\n" +
                 //    $"client:{mClient} action:{mAction} message:{mMessage}\r\n");
-                bool ret = MyTimer.Tick;
+
+                //if (mMyTimer.Tick)
+                //{
+                //    Console.WriteLine($"process task num * s {CMDSDispatcher.num}");
+                //}
+
             }
             catch (Exception ex)
             {

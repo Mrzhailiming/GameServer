@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Server
+namespace Handler
 {
     public class ServerHandler : SimpleChannelInboundHandler<CommonMessage>
     {

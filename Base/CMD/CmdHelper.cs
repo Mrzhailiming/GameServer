@@ -39,7 +39,9 @@ namespace Base
 
         private static void InitMessageHandler()
         {
-            string path = $"D:\\Code\\CommonServer\\CommonServer\\Server\\bin\\Debug\\netcoreapp3.1\\Handler.dll";
+            string exePath = Directory.GetCurrentDirectory();
+
+            string path = $"{exePath}\\Handler.dll";
             Assembly assembly = Assembly.LoadFile(path);
             var types = assembly.GetTypes();
 

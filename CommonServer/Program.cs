@@ -1,15 +1,16 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Factorial.Server
+namespace Server
 {
     using Base;
+    using Base.Tick;
     using CommonProtocol;
     using DotNetty.Codecs;
     using DotNetty.Transport.Bootstrapping;
     using DotNetty.Transport.Channels;
     using DotNetty.Transport.Channels.Sockets;
-    using global::Server;
+    using global::Handler;
     using System;
     using System.Threading.Tasks;
 
@@ -45,7 +46,8 @@ namespace Factorial.Server
                 IChannel bootstrapChannel = await bootstrap.BindAsync(8888);
 
                 Console.WriteLine("key to quit");
-                Console.ReadLine();
+                Console.ReadKey();
+
                 await bootstrapChannel.CloseAsync();
             }
             finally
@@ -56,9 +58,16 @@ namespace Factorial.Server
 
         public static void Main()
         {
-            CmdHelper.Init();
+            InitServer();
 
             RunServerAsync().Wait();
+        }
+
+        public static void InitServer()
+        {
+            CmdHelper.Init();
+
+            TickManager.Instance().Init();
         }
     }
 }

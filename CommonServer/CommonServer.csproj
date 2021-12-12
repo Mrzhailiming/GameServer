@@ -3,6 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\bin\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Base\Base.csproj" />
     <ProjectReference Include="..\Gen\Gen.csproj" />
-    <ProjectReference Include="..\Server\Handler.csproj" />
+    <ProjectReference Include="..\Handler\Handler.csproj" />
   </ItemGroup>
 
 </Project>
