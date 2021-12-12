@@ -1,4 +1,5 @@
 ﻿using Base.BaseData;
+using Base.Tick;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -6,65 +7,17 @@ using System.Threading;
 
 namespace Base
 {
-
-    public class MyTimer
-    {
-        private Stopwatch timer = null;
-        private object mutex = new object();
-
-        private int mMnterval;
-
-        public MyTimer(int interval)
-        {
-            mMnterval = interval;
-        }
-
-        public bool Tick
-        {
-            get
-            {
-                if (null == timer)
-                {
-                    lock (mutex)
-                    {
-                        if (null == timer)
-                        {
-                            timer = new Stopwatch();
-                            timer.Start();
-                        }
-                    }
-                }
-                else if(timer.ElapsedMilliseconds - cur > mMnterval)
-                {
-                    Console.WriteLine($"DoFunc 间隔{timer.ElapsedMilliseconds - cur}");
-                    cur = timer.ElapsedMilliseconds;
-                    return true;
-                }
-
-                return false;
-            }
-            set
-            {
-
-            }
-        }
-        public double cur = 0;
-    }
-
-    internal class Task
+    internal class CMDTask
     {
         private Action<CommonClient, CommonMessage> mAction;
         private CommonClient mClient;
         private CommonMessage mMessage;
 
-        private MyTimer mMyTimer;
-        public Task(Action<CommonClient, CommonMessage> action, CommonClient client, CommonMessage message)
+        public CMDTask(Action<CommonClient, CommonMessage> action, CommonClient client, CommonMessage message)
         {
             mAction = action;
             mClient = client;
             mMessage = message;
-
-            mMyTimer = new MyTimer(1000);
         }
 
         public void DoAction()
@@ -72,14 +25,6 @@ namespace Base
             try
             {
                 mAction.Invoke(mClient, mMessage);
-                //Console.WriteLine($"Task.DoAction() Success:\r\n" +
-                //    $"client:{mClient} action:{mAction} message:{mMessage}\r\n");
-
-                //if (mMyTimer.Tick)
-                //{
-                //    Console.WriteLine($"process task num * s {CMDSDispatcher.num}");
-                //}
-
             }
             catch (Exception ex)
             {
@@ -89,49 +34,20 @@ namespace Base
             }
         }
 
-        private Task() { }
+        private CMDTask() { }
     }
     /// <summary>
     /// 处理协议, 在这做异步吧
     /// </summary>
     public class CMDSDispatcher
     {
-        static ConcurrentQueue<Task> mTaskQueue = new ConcurrentQueue<Task>();
+        static ConcurrentQueue<CMDTask> mTaskQueue = new ConcurrentQueue<CMDTask>();
 
         static Semaphore sema = new Semaphore(0, int.MaxValue);
 
-        public static int num = 0;
-
         public CMDSDispatcher()
         {
-            //设置正在等待线程的事件为终止
-            AutoResetEvent autoEvent = new AutoResetEvent(false);
-
-            int workerThreads;
-
-            int portThreads;
-
-            //获取处于活动状态的线程池请求的数目
-            ThreadPool.GetMaxThreads(out workerThreads, out portThreads);
-
-            //在控制台中显示处于活动状态的线程池请求的数目
-            Console.WriteLine("设置前，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
-
-            workerThreads = 10;//设置辅助线程的最大数
-
-            portThreads = 500;//设置线程池中异步I/O线程的最大数
-
-            //设置处于活动状态的线程池请求的数目
-
-            ThreadPool.SetMaxThreads(workerThreads, portThreads);
-
-
-
-            //在控制台中显示设置后的处于活动状态的线程池请求的数目
-
-            Console.WriteLine("设置后，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
-
-
+            SetThreadPool(10, 10);
 
             Thread thread = new Thread(Execute);
             thread.Name = "CMDSDispatcher";
@@ -141,31 +57,54 @@ namespace Base
 
         public void Dispatch(Action<CommonClient, CommonMessage> action, CommonClient client, CommonMessage message)
         {
-            mTaskQueue.Enqueue(new Task(action, client, message));
+            mTaskQueue.Enqueue(new CMDTask(action, client, message));
             sema.Release();
         }
 
 
-        static void TimerCall(object o)
+        void SetThreadPool(int workerThreads,int portThreads)
         {
+            //设置正在等待线程的事件为终止
+            AutoResetEvent autoEvent = new AutoResetEvent(false);
+
+            //获取处于活动状态的线程池请求的数目
+            ThreadPool.GetMaxThreads(out workerThreads, out portThreads);
+
+            //在控制台中显示处于活动状态的线程池请求的数目
+            Console.WriteLine("设置前，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
+
+            workerThreads = 10;//设置辅助线程的最大数
+
+            portThreads = 100;//设置线程池中异步I/O线程的最大数
+
+            //设置处于活动状态的线程池请求的数目
+
+            ThreadPool.SetMaxThreads(workerThreads, portThreads);
+
+            //在控制台中显示设置后的处于活动状态的线程池请求的数目
+
+            Console.WriteLine("设置后，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
 
         }
 
         private static void Execute()
         {
-            
+            string name = Thread.CurrentThread.Name;
             while (true)
             {
                 try
                 {
+                    CMDTask task = null;
+
                     sema.WaitOne();
-                    Task task = null;
-                    while (mTaskQueue.TryDequeue(out task))
+                    do
                     {
-                        Interlocked.Increment(ref num);
-                        ThreadPool.QueueUserWorkItem(Do, task);//执行线程池
-                        //task.DoAction();
-                    }
+                        if (mTaskQueue.TryDequeue(out task))
+                        {
+                            ThreadPool.QueueUserWorkItem(Do, task);// 投递
+                        }
+                    } while (mTaskQueue.TryDequeue(out task));
+                    
                 }
                 catch (Exception ex)
                 {
@@ -182,7 +121,7 @@ namespace Base
 
         static void Do(object task)
         {
-            Task task1 = (Task)task;
+            CMDTask task1 = (CMDTask)task;
 
             task1.DoAction();
         }

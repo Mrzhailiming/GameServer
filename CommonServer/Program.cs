@@ -16,6 +16,7 @@ namespace Server
 
     class Program
     {
+        
         static async Task RunServerAsync()
         {
 
@@ -65,9 +66,10 @@ namespace Server
 
         public static void InitServer()
         {
+
             CmdHelper.Init();
 
-            TickManager.Instance().Init();
+            TickManager.Instance().RunAsync();
         }
     }
 }

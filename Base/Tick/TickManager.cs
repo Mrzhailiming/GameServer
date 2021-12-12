@@ -3,51 +3,64 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Base.Tick
 {
+    /// <summary>
+    /// 可不可以 只tick CommonClient 的tick函数, 然后让 CommonClient tick自己的 tickinfo;
+    /// 所以, TickManager 的 TickInfos 里只有一个需要tick 的, 就是  CommonClient.Update();
+    /// 那 CommonClient.Update 的时间间隔设置多久呢? 设置为 0 还是 几毫秒
+    /// 不设置吧, Update 里有需要tick的 tickinfo, 设置时间间隔的话, 肯定不能按时tick到
+    /// </summary>
     public class TickManager : Singletion<TickManager>
     {
-        private ConcurrentQueue<TickInfos> mTickInfos = new ConcurrentQueue<TickInfos>();
+        /// <summary>
+        /// 维护所有要tick的 TickInfo
+        /// </summary>
+        private ConcurrentQueue<TickInfo> mTickInfos = new ConcurrentQueue<TickInfo>();
 
-        private Semaphore sema = new Semaphore(0, int.MaxValue);
-
-        public void Init()
+        /// <summary>
+        /// 异步 挺好使
+        /// 异步调用的函数是个死循环
+        /// </summary>
+        public async void RunAsync()
         {
-            Thread thread = new Thread(Execute);
-            thread.IsBackground = true;
-            thread.Name = "threadtick";
-
-            thread.Start();
+            await Task.Run(Execute);
         }
 
-        public void AddTickInfos(TickInfos tickInfos)
+        /// <summary>
+        /// 向 TickManager 增加要tick的 TickInfos
+        /// </summary>
+        /// <param name="tickInfos"></param>
+        public void AddTickInfo(TickInfo tickInfo)
         {
-            mTickInfos.Enqueue(tickInfos);
-            sema.Release();
+            mTickInfos.Enqueue(tickInfo);
         }
 
         public void Execute()
         {
             while (true)
             {
-                sema.WaitOne();
                 // 会不会迭代器失效?
-                foreach (var tickInfos in mTickInfos)
+                foreach (var tickInfo in mTickInfos)
                 {
                     try
                     {
-                        tickInfos.DoTicks(0);
+                        // 我只负责调你的 func 有没有到时间间隔, 你自己把控
+                        // 我不想把控, 也把控不了啊
+                        // 不可能把你们所有的时间间隔都记下来吧, 不可能
+                        tickInfo.DoTick(0);
 
                     }
                     catch (Exception ex)
                     {
+
                         Console.WriteLine($"TickManager.Execute tickInfos.DoTicks()\r\n" +
                             $"{ex}");
                     }
                 }
 
-                sema.Release();
             }
         }
     }

@@ -11,21 +11,18 @@ namespace Handler
 {
     public class ServerHandler : SimpleChannelInboundHandler<CommonMessage>
     {
+        
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
         {
             // 投递
-            CmdHelper.Fire(new CommonClient()
-            {
-                ctx = ctx,
-                ClientEndPoint = ctx.Channel.RemoteAddress,
-                Name = ctx.Channel.RemoteAddress.ToString()
-            },
-            msg); ;
-            //Console.WriteLine($"{msg}");
+            CmdHelper.Fire(ctx, msg);
         }
+
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
-            //Console.WriteLine("recv connect");
+            ClientManager.Instance().AddCient(ctx);
         }
+
+        
     }
 }

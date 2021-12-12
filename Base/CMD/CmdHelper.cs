@@ -1,5 +1,6 @@
 ﻿using Base.Attributes;
 using Base.BaseData;
+using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using System;
 using System.Collections.Generic;
@@ -102,9 +103,17 @@ namespace Base
         /// <summary>
         /// 投递消息
         /// </summary>
-        public static void Fire(CommonClient client, CommonMessage message)
+        public static void Fire(IChannelHandlerContext ctx, CommonMessage message)
         {
             Action<CommonClient, CommonMessage> action = null;
+
+            var client = ClientManager.Instance().FindClient(ctx);
+
+            if(null == client)
+            {
+                return;
+            }
+
             if (mActions.TryGetValue(message.mCMD, out action))
             {
                 //Console.WriteLine($"cmd:{message.mCMD} find");

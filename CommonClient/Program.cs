@@ -57,14 +57,14 @@ namespace Client
 
         public static void Main()
         {
-            InitClient();
+            InitClientServer();
 
             RunClientAsync().Wait();
         }
 
-        public static void InitClient()
+        public static void InitClientServer()
         {
-            TickManager.Instance().Init(); 
+            TickManager.Instance().RunAsync(); 
 
             CmdHelper.Init();
         }

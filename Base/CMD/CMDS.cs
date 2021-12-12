@@ -7,5 +7,6 @@ namespace Base
     public enum CMDS : long
     {
         Test = 1,
+        FrameSynchronization = 2,
     }
 }

@@ -6,6 +6,7 @@ using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Handler.CmdHandlers
 {
@@ -16,7 +17,28 @@ namespace Handler.CmdHandlers
         {
             Person person = message.GetObject<Person>();
             //Console.WriteLine($"recv {person}");
-            client.Send(message);
+            //client.Send(message);
+        }
+
+        [CmdHandlerAttribute(CmdID = CMDS.FrameSynchronization)]
+        public static void ProcessFrameSynchronization(CommonClient client, CommonMessage message)
+        {
+
+            var allClient = ClientManager.Instance().GetAllClient();
+            int count = 0;
+            while(true)
+            {
+                foreach (var cli in allClient.Values)
+                {
+                    if (client != cli)
+                    {
+                        cli.Send(message);
+                    }
+                }
+
+                Thread.Sleep(1 * 1000);
+            }
+            
         }
     }
 }

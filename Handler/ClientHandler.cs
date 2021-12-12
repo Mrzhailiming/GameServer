@@ -20,7 +20,13 @@ namespace Handler
                 Email = "44@qq.com"
             };
 
-            byte[] result = new byte[person.CalculateSize()];
+            SynchronousInfo synchronousInfo = new SynchronousInfo()
+            {
+                Name = "888",
+                OperationInfo = "frame sync"
+            };
+
+            byte[] result = new byte[synchronousInfo.CalculateSize()];
             try
             {
                 using (CodedOutputStream rawOutput = new CodedOutputStream(result))
@@ -35,7 +41,7 @@ namespace Handler
 
             CommonMessage message = new CommonMessage()
             {
-                mCMD = CMDS.Test,
+                mCMD = CMDS.FrameSynchronization,
                 mMessageBuffer = result
             };
 
@@ -53,10 +59,10 @@ namespace Handler
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
         {
-            Console.WriteLine("send success");
+            Console.WriteLine($"recv from server success {msg.mCMD}");
 
-            Thread.Sleep(100000000);
-            TestSend(ctx);
+            //Thread.Sleep(100000000);
+            //TestSend(ctx);
         }
     }
 }
