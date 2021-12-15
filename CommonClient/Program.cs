@@ -59,7 +59,13 @@ namespace Client
         {
             InitClientServer();
 
-            RunClientAsync().Wait();
+            // 服务器 端口 8888  连接中心服务器
+            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8888);
+            ClientBootStrap.Instance().RunClientAsync(iPEndPoint);
+
+            // 客户端的房间服务器 监听 9999
+            IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9999);
+            ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
         }
 
         public static void InitClientServer()

@@ -11,3 +11,13 @@ message SynchronousInfo{
 	string name = 1;
 	string operationInfo = 2; // 玩家的操作
 }
+
+message JionRoom{
+	int64 roleID = 1; // 玩家ID
+	int32 jionType = 2; // 加入类型 0 队友 1 敌人
+	string operationInfo = 3; // 玩家的操作
+}
+
+message CSJoinRoom{
+	string allClient = 1; // 服务器通知客户端,要去连接的其他客户端 端口 9999
+}

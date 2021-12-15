@@ -8,5 +8,7 @@ namespace Base
     {
         Test = 1,
         FrameSynchronization = 2,
+        JionRoom = 3,
+        SCJionRoom = 4,
     }
 }

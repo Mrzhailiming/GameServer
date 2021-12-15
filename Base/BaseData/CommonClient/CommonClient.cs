@@ -14,6 +14,7 @@ namespace Base.BaseData
     /// </summary>
     public partial class CommonClient
     {
+        public long RoleID { get; set; }
         public string Name { get; set; }
 
         public EndPoint ClientEndPoint { get; set; }

@@ -111,7 +111,7 @@ namespace Base
 
             if(null == client)
             {
-                return;
+                //return;
             }
 
             if (mActions.TryGetValue(message.mCMD, out action))
