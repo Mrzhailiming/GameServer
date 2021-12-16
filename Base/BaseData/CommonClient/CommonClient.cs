@@ -21,7 +21,8 @@ namespace Base.BaseData
 
         public IChannelHandlerContext ctx { get; set; }
 
-        
+        public string RoomServerIP { get; set; }
+        public string RoomServerPort { get; set; }
 
         public CommonClient()
         {

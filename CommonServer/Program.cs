@@ -59,6 +59,8 @@ namespace Server
 
         public static void Main()
         {
+            
+
             InitServer();
 
             RunServerAsync().Wait();
@@ -67,7 +69,8 @@ namespace Server
         public static void InitServer()
         {
 
-            CmdHelper.Init();
+            CmdHelper.Init(CMDType.Server);
+            ClientManager.Instance().BeginMatchTick();
 
             TickManager.Instance().RunAsync();
         }

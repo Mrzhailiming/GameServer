@@ -2,10 +2,12 @@
 using Base.Attributes;
 using Base.BaseData;
 using Base.Client;
+using Base.DataHelper;
 using ConnmonMessage;
 using Google.Protobuf;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading;
 
@@ -26,7 +28,8 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.FrameSynchronization)]
+        [CmdHandlerAttribute(CmdID = CMDS.FrameSynchronization,
+            CMDType = CMDType.ServerAndClient)]
         public static void ProcessFrameSynchronization(CommonClient client, CommonMessage message)
         {
             Console.WriteLine($"server and client recv client FrameSynchronization");
@@ -52,7 +55,8 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.JionRoom)]
+        [CmdHandlerAttribute(CmdID = CMDS.JionRoom,
+            CMDType = CMDType.Client)]
         public static void ProcessJionRoom(CommonClient client, CommonMessage message)
         {
             JionRoom jionRoom = message.GetObject<JionRoom>();
@@ -68,12 +72,43 @@ namespace Handler.CmdHandlers
 
         }
 
-        [CmdHandlerAttribute(CmdID = CMDS.SCJionRoom)]
+        /// <summary>
+        /// 客户用 服务器告诉客户端连接其他的客户端
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="message"></param>
+        [CmdHandlerAttribute(CmdID = CMDS.SCJionRoom,
+            CMDType = CMDType.Client)]
         public static void ProcessSCJionRoom(CommonClient client, CommonMessage message)
         {
-            CSJoinRoom jionRoom = message.GetObject<CSJoinRoom>();
+            SCJoinRoom jionRoom = message.GetObject<SCJoinRoom>();
 
 
+            List<IPPort> toConnect = IPParserHelper.StringIPPort(jionRoom.AllClient);
+
+            foreach(IPPort iPPort in toConnect)
+            {
+                // 不要连接自己的房间
+                if(iPPort.Port == )
+                IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse(iPPort.IP),Convert.ToInt32(iPPort.Port));
+
+                ClientBootStrap.Instance().RunClientRoomClientAsync(EndPoint);
+            }
+
+        }
+
+        /// <summary>
+        /// 玩家登录
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="message"></param>
+        [CmdHandlerAttribute(CmdID = CMDS.CSLogIn,
+            CMDType = CMDType.Server)]
+        public static void ProcessCSLogIn(CommonClient client, CommonMessage message)
+        {
+            CSLogIn jionRoom = message.GetObject<CSLogIn>();
+            client.RoomServerIP = jionRoom.RoomServerIP;
+            client.RoomServerPort = jionRoom.RoomServerPort.ToString();
         }
     }
 }

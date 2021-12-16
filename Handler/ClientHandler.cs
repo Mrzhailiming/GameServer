@@ -50,11 +50,40 @@ namespace Handler
 
             ctx.Flush();
         }
+        void LogIn(IChannelHandlerContext ctx)
+        {
+            CSLogIn logIn = new CSLogIn()
+            {
+                RoomServerIP = "127.0.0.1",
+                RoomServerPort = 9999
+            };
+            byte[] result = new byte[logIn.CalculateSize()];
+            try
+            {
+                using (CodedOutputStream rawOutput = new CodedOutputStream(result))
+                {
+                    logIn.WriteTo(rawOutput);
+                }
+            }
+            catch (Exception ex)
+            {
+            }
 
+
+            CommonMessage message = new CommonMessage()
+            {
+                mCMD = CMDS.CSLogIn,
+                mMessageBuffer = result
+            };
+
+            ctx.WriteAsync(message);
+            ctx.Flush();
+
+        }
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
             Console.WriteLine("connect success");
-            TestSend(ctx);
+            LogIn(ctx);
         }
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)

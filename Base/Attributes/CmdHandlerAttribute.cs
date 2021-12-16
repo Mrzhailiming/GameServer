@@ -7,5 +7,7 @@ namespace Base.Attributes
     public class CmdHandlerAttribute : Attribute
     {
         public CMDS CmdID { get; set; }
+
+        public CMDType CMDType { get; set; }
     }
 }

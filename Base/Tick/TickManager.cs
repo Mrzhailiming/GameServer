@@ -18,7 +18,12 @@ namespace Base.Tick
         /// <summary>
         /// 维护所有要tick的 TickInfo
         /// </summary>
-        private ConcurrentQueue<TickInfo> mTickInfos = new ConcurrentQueue<TickInfo>();
+        //private ConcurrentQueue<TickInfo> mTickInfos = new ConcurrentQueue<TickInfo>();
+
+        /// <summary>
+        /// 维护的 TickInfo 列表
+        /// </summary>
+        private LinkedList<TickInfo> mTickInfos = new LinkedList<TickInfo>();
 
         /// <summary>
         /// 异步 挺好使
@@ -35,31 +40,48 @@ namespace Base.Tick
         /// <param name="tickInfos"></param>
         public void AddTickInfo(TickInfo tickInfo)
         {
-            mTickInfos.Enqueue(tickInfo);
+            mTickInfos.AddLast(tickInfo);
         }
 
         public void Execute()
         {
             while (true)
             {
-                // 会不会迭代器失效?
-                foreach (var tickInfo in mTickInfos)
+
+                var node = mTickInfos.First;
+
+                while (null != node)
                 {
-                    try
-                    {
-                        // 我只负责调你的 func 有没有到时间间隔, 你自己把控
-                        // 我不想把控, 也把控不了啊
-                        // 不可能把你们所有的时间间隔都记下来吧, 不可能
-                        tickInfo.DoTick(0);
+                    TickInfo tick = node.Value;
 
-                    }
-                    catch (Exception ex)
+                    if (!tick.DoTick(0))
                     {
+                        mTickInfos.Remove(tick);
 
-                        Console.WriteLine($"TickManager.Execute tickInfos.DoTicks()\r\n" +
-                            $"{ex}");
+                        // 如果 mTickList.count = 0, 不应该让 TickManager 移除此TickInfos
+                        //IsEffective = false;
                     }
+
+                    node = node.Next;
                 }
+                // 会不会迭代器失效?
+                //foreach (var tickInfo in mTickInfos)
+                //{
+                //    try
+                //    {
+                //        // 我只负责调你的 func 有没有到时间间隔, 你自己把控
+                //        // 我不想把控, 也把控不了啊
+                //        // 不可能把你们所有的时间间隔都记下来吧, 不可能
+                //        tickInfo.DoTick(0);
+
+                //    }
+                //    catch (Exception ex)
+                //    {
+
+                //        Console.WriteLine($"TickManager.Execute tickInfos.DoTicks()\r\n" +
+                //            $"{ex}");
+                //    }
+                //}
 
             }
         }

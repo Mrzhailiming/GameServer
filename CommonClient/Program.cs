@@ -10,6 +10,7 @@ namespace Client
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Base;
+    using Base.Client;
     using Base.Tick;
     using CommonProtocol;
     using DotNetty.Handlers.Logging;
@@ -21,46 +22,12 @@ namespace Client
 
     class Program
     {
-        static async Task RunClientAsync()
-        {
-            var group = new MultithreadEventLoopGroup();
-
-            try
-            {
-                var bootstrap = new Bootstrap();
-                bootstrap
-                    .Group(group)
-                    .Channel<TcpSocketChannel>()
-                    .Option(ChannelOption.TcpNodelay, true)
-                    .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
-                    {
-                        IChannelPipeline pipeline = channel.Pipeline;
-
-                        pipeline.AddLast(new MessageDecoder());
-                        pipeline.AddLast(new MessageEncoder());
-                        pipeline.AddLast(new ClientHandler());
-                    }));
-
-                IChannel bootstrapChannel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8888));
-
-
-                Console.ReadLine();
-
-                await bootstrapChannel.CloseAsync();
-            }
-            finally
-            {
-                group.ShutdownGracefullyAsync().Wait(1000);
-            }
-        }
-
-
         public static void Main()
         {
             InitClientServer();
 
             // 服务器 端口 8888  连接中心服务器
-            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8888);
+            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), ClientInfo.MyClientServerPort);
             ClientBootStrap.Instance().RunClientAsync(iPEndPoint);
 
             // 客户端的房间服务器 监听 9999
@@ -72,7 +39,7 @@ namespace Client
         {
             TickManager.Instance().RunAsync(); 
 
-            CmdHelper.Init();
+            CmdHelper.Init(CMDType.Client);
         }
     }
 }

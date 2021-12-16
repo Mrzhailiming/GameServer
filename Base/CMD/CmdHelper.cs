@@ -25,7 +25,7 @@ namespace Base
         static private Dictionary<CMDS, Action<CommonClient, CommonMessage>> mActions;
 
         static private CMDSDispatcher mCMDSDispatcher;
-        static public void Init()
+        static public void Init(CMDType cMDType)
         {
             mMessageTypes = new Dictionary<string, MessageParser>();
             mActions = new Dictionary<CMDS, Action<CommonClient, CommonMessage>>();
@@ -33,12 +33,12 @@ namespace Base
 
             //InitMessageTypesParser();
 
-            InitMessageHandler();
+            InitMessageHandler(cMDType);
 
             
         }
 
-        private static void InitMessageHandler()
+        private static void InitMessageHandler(CMDType cMDType)
         {
             string exePath = Directory.GetCurrentDirectory();
 
@@ -54,23 +54,24 @@ namespace Base
                 {
                     var arrr = method.GetCustomAttribute<CmdHandlerAttribute>();
 
-                    if (null == arrr)
+                    if (null == arrr || 
+                        (arrr.CMDType != cMDType && arrr.CMDType != CMDType.ServerAndClient))
                     {
                         continue;
                     }
                     var handler = Delegate.CreateDelegate(typeof(Action<CommonClient, CommonMessage>), method) as Action<CommonClient, CommonMessage>;
                     if (!mActions.TryAdd(arrr.CmdID, handler))
                     {
-                        Console.WriteLine($"注册消息处理失败 CmdID:{arrr.CmdID}, handler{method.Name}");
+                        Console.WriteLine($"注册{cMDType}消息处理失败 CmdID:{arrr.CmdID}, handler:{method.Name}");
                     }
                     else
                     {
-                        Console.WriteLine($"注册消息处理成功 CmdID:{arrr.CmdID}, handler{method.Name}");
+                        Console.WriteLine($"注册{cMDType}消息处理成功 CmdID:{arrr.CmdID}, handler:{method.Name}");
                     }
                 }
             }
 
-            Console.WriteLine($"共注册消息处理:{mActions.Count}个");
+            Console.WriteLine($"共注册{cMDType}消息处理:{mActions.Count}个");
         }
 
         /// <summary>
