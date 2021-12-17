@@ -80,6 +80,7 @@ namespace Handler
             LogIn(ctx);
 
             // 在这把服务器当做自己的维护的客户端, 加到 clientmanager 里, 能行
+            ClientManager.Instance().AddCient(ctx);
         }
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
