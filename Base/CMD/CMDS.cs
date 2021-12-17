@@ -10,7 +10,10 @@ namespace Base
         FrameSynchronization = 2,
         JionRoom = 3,
         SCJionRoom = 4,
-        CSLogIn = 5,
+        CSLogIn = 5,    // 玩家发起登录
+        SCLogIn = 6,    // 服务器回复登录结果
+        RoomServerCSLogIn = 7,    // 玩家发起登录
+        RoomServerSCLogIn = 8,    // 服务器回复登录结果
     }
     public enum CMDType : long
     {

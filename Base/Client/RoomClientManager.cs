@@ -11,7 +11,10 @@ using System.Text;
 
 namespace Base
 {
-    public class ClientManager : Singletion<ClientManager>
+    /// <summary>
+    /// 管理房间玩家, 一个客户端一个
+    /// </summary>
+    public class RoomClientManager : Singletion<RoomClientManager>
     {
         /// <summary>
         /// 未执行login的玩家
@@ -25,12 +28,21 @@ namespace Base
         private Dictionary<IChannelHandlerContext, CommonClient> mOnLineClientDic =
             new Dictionary<IChannelHandlerContext, CommonClient>();
 
-        private TickInfos mClientTickInfos;
-        public void BeginMatchTick()
+        private TickInfos mRoomTickInfos;
+
+        public void BeginGameTick()
         {
-            mClientTickInfos = new TickInfos(this);
-            TickManager.Instance().AddTickInfo(new TickInfo(Match, 1 * 1000, mClientTickInfos));
-            Console.WriteLine($"begin match tick");
+            mRoomTickInfos = new TickInfos(this);
+            TickManager.Instance().AddTickInfo(new TickInfo(Gaming, 1 * 1000, mRoomTickInfos));
+            Console.WriteLine($"begin Begin Game Tick");
+        }
+
+        public bool Gaming(long tick)
+        {
+            mRoomTickInfos.DoTick(tick);
+
+            Console.WriteLine($"Gaming Tick");
+            return true;
         }
 
         /// <summary>
@@ -82,43 +94,5 @@ namespace Base
             return mOnLineClientDic;
         }
 
-
-        public bool Match(long ticks)
-        {
-            if (mOnLineClientDic.Count >= 1)
-            {
-                List<string> ips = new List<string>();
-                List<string> ports = new List<string>();
-                foreach (var client in mClientDic.Values)
-                {
-                    ips.Add(client.RoomServerIP);
-                    ports.Add(client.RoomServerPort);
-                }
-
-                SCJoinRoom scJoinRoom = new SCJoinRoom()
-                {
-                    //AllClient = $"{ips[0]}&{ports[0]}|{ips[1]}&{ports[1]}"
-                    AllClient = $"{ips[0]}&{ports[0]}"
-                };
-
-                byte[] result = MessageBufHelper.GetBytes(scJoinRoom);
-
-                CommonMessage message = new CommonMessage()
-                {
-                    mCMD = CMDS.SCJionRoom,
-                    mMessageBuffer = result
-                };
-
-                foreach (var client in mClientDic.Values)
-                {
-                    client.Send(message);
-                }
-                Console.WriteLine($"match success, end match");
-
-                return false; // 先匹配一次, 逻辑还得改
-            }
-
-            return true;
-        }
     }
 }

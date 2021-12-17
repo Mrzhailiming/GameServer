@@ -1,5 +1,7 @@
 ﻿using Base;
 using Base.BaseData;
+using Base.Client;
+using Base.DataHelper;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
@@ -50,25 +52,17 @@ namespace Handler
 
             ctx.Flush();
         }
+
         void LogIn(IChannelHandlerContext ctx)
         {
             CSLogIn logIn = new CSLogIn()
             {
                 RoomServerIP = "127.0.0.1",
-                RoomServerPort = 9999
+                RoomServerPort = Convert.ToInt32(ClientInfo.MyClientServerPort)
             };
-            byte[] result = new byte[logIn.CalculateSize()];
-            try
-            {
-                using (CodedOutputStream rawOutput = new CodedOutputStream(result))
-                {
-                    logIn.WriteTo(rawOutput);
-                }
-            }
-            catch (Exception ex)
-            {
-            }
 
+            // 发送消息的步骤可以在简化一下
+            byte[] result = MessageBufHelper.GetBytes(logIn);
 
             CommonMessage message = new CommonMessage()
             {
@@ -82,8 +76,10 @@ namespace Handler
         }
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
-            Console.WriteLine("connect success");
+            Console.WriteLine("connect success begin login");
             LogIn(ctx);
+
+            // 在这把服务器当做自己的维护的客户端, 加到 clientmanager 里, 能行
         }
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)

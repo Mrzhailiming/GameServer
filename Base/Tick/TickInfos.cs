@@ -9,7 +9,7 @@ namespace Base.Tick
         /// <summary>
         /// TickInfo 的拥有者
         /// </summary>
-        private TickInfos mOwner;
+        public TickInfos mOwner;
 
         /// <summary>
         /// tick时执行的函数

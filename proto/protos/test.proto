@@ -24,6 +24,11 @@ message SCJoinRoom{
 
 
 message CSLogIn{
-	string RoomServerIP = 2;
-	int32 RoomServerPort = 3;
+	string RoomServerIP = 1;
+	int32 RoomServerPort = 2;
+}
+
+message SCLogIn{
+	int32 roleID = 1;
+	int32 result = 2;
 }

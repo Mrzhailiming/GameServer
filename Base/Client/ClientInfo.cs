@@ -6,6 +6,9 @@ namespace Base.Client
 {
     public class ClientInfo
     {
-        public static int MyClientServerPort = 9999;
+        /// <summary>
+        /// 房间服务器的监听端口
+        /// </summary>
+        public static string MyClientServerPort = "9999";
     }
 }

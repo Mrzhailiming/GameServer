@@ -56,6 +56,7 @@ namespace Base.Tick
 
                     if (!tick.DoTick(0))
                     {
+                        Console.WriteLine($"移除tick owner:{tick.mOwner}");
                         mTickInfos.Remove(tick);
 
                         // 如果 mTickList.count = 0, 不应该让 TickManager 移除此TickInfos

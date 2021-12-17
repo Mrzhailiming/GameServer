@@ -112,7 +112,10 @@ namespace Base
 
             if(null == client)
             {
+                // 不保证消息处理函数拿到的client都不为null
                 //return;
+
+                client = RoomClientManager.Instance().FindClient(ctx);
             }
 
             if (mActions.TryGetValue(message.mCMD, out action))

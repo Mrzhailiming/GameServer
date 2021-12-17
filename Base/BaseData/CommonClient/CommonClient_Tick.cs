@@ -33,8 +33,7 @@ namespace Base.BaseData
         private bool Update(long time)
         {
             mClientTickInfos.DoTick(time);
-            Console.WriteLine($"client {Name} update {(new DateTimeOffset(DateTime.Now)).ToUnixTimeMilliseconds()}");
-            //Thread.Sleep(3 * 1000);
+            //Console.WriteLine($"client {Name} update {(new DateTimeOffset(DateTime.Now)).ToUnixTimeMilliseconds()}");
             return true;
         }
     }

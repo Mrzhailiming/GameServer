@@ -11,13 +11,14 @@ namespace Handler
 {
     /// <summary>
     /// 房间服务器  9 个客户端连接过来
+    /// 1 对 9
     /// </summary>
     public class ClientRoomServerHandler : SimpleChannelInboundHandler<CommonMessage>
     {
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
             // 
-            ClientManager.Instance().AddCient(ctx);
+            RoomClientManager.Instance().AddCient(ctx);
         }
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
