@@ -97,7 +97,7 @@ namespace Base
         /// </summary>
         /// <param name="EndPoint"></param>
         /// <returns></returns>
-        public async Task RunClientRoomClientAsync(IPEndPoint EndPoint)
+        public async void RunClientRoomClientAsync(IPEndPoint EndPoint)
         {
 
             var group = new MultithreadEventLoopGroup();
