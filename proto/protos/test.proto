@@ -17,6 +17,10 @@ message JionRoom{
 	int32 jionType = 2; // 加入类型 0 队友 1 敌人
 }
 
+message RoomServerJionRoomRsp{
+	int32 Result = 1; // 房间服务器回复客户端,加入房间结果
+}
+
 message SCJoinRoom{
 	string allClient = 1; // 服务器通知客户端,要去连接的其他客户端 端口 9999
 }
@@ -32,3 +36,9 @@ message SCLogIn{
 	int32 roleID = 1;
 	int32 result = 2;
 }
+
+message RoomServerSynchronousInfo{
+	string name = 1;
+	string operationInfo = 2; // 玩家的操作
+}
+

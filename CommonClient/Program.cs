@@ -10,9 +10,12 @@ namespace Client
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Base;
+    using Base.BaseData;
     using Base.Client;
+    using Base.DataHelper;
     using Base.Tick;
     using CommonProtocol;
+    using ConnmonMessage;
     using DotNetty.Handlers.Logging;
     using DotNetty.Handlers.Tls;
     using DotNetty.Transport.Bootstrapping;
@@ -26,6 +29,10 @@ namespace Client
         {
             InitClientServer();
 
+            Random ran = new Random();
+            int n = ran.Next(100, 1000);
+            ClientInfo.MyClientServerPort = n.ToString();
+
             // 服务器 端口 8888  连接中心服务器
             IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8888);
             ClientBootStrap.Instance().RunClientAsync(iPEndPoint);
@@ -33,6 +40,8 @@ namespace Client
             // 客户端的房间服务器 监听 9999
             IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), Convert.ToInt32(ClientInfo.MyClientServerPort));
             ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
+
+            
         }
 
         public static void InitClientServer()
@@ -40,6 +49,12 @@ namespace Client
             TickManager.Instance().RunAsync(); 
 
             CmdHelper.Init(CMDType.Client);
+
+            //RunAsync();
         }
+
+        
     }
+
+    
 }

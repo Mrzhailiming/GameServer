@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 
 namespace Handler.CmdHandlers
 {
+
+
     public class CmdHandler_Test
     {
         [CmdHandlerAttribute(CmdID = CMDS.Test)]
@@ -25,30 +27,30 @@ namespace Handler.CmdHandlers
         }
 
         /// <summary>
-        /// 服务器和客户端用, 接受客户端的帧同步消息
+        /// 服务器和房间服务器用,
+        /// 服务器接受客户端的帧同步消息 x
+        /// 房间服务器接收所有客户端的帧同步消息
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
         [CmdHandlerAttribute(CmdID = CMDS.FrameSynchronization,
-            CMDType = CMDType.ServerAndClient)]
+            CMDType = CMDType.Client)]
         public static void ProcessFrameSynchronization(CommonClient client, CommonMessage message)
         {
-            Console.WriteLine($"server and client recv client FrameSynchronization");
+            Console.WriteLine($"roomserver recv client FrameSynchronization");
+            //RoomPlayersManager.Instance().BroadCast(message);
+        }
 
-            //var allClient = ClientManager.Instance().GetAllClient();
-            //int count = 0;
-            //while(true)
-            //{
-            //    foreach (var cli in allClient.Values)
-            //    {
-            //        if (client != cli)
-            //        {
-            //            cli.Send(message);
-            //        }
-            //    }
-            //    Thread.Sleep(1 * 1000);
-            //}
+        [CmdHandlerAttribute(CmdID = CMDS.RoomServerFrameSynchronization,
+            CMDType = CMDType.Client)]
+        public static void ProcessServerFrameSynchronization(CommonClient client, CommonMessage message)
+        {
+            RoomServerSynchronousInfo roomServerSynchronousInfo = message.GetObject<RoomServerSynchronousInfo>();
+            Console.WriteLine($"client recv roomserver  FrameSynchronization:{roomServerSynchronousInfo.OperationInfo}");
 
+            //Thread.Sleep(1000);
+            //RoomPlayersManager.Instance().BroadCast(message);
+            //Console.WriteLine($"roomserver BroadCast FrameSynchronization:{roomServerSynchronousInfo.OperationInfo}");
         }
 
         /// <summary>
@@ -61,8 +63,9 @@ namespace Handler.CmdHandlers
         public static void ProcessJionRoom(CommonClient client, CommonMessage message)
         {
             JionRoom jionRoom = message.GetObject<JionRoom>();
+            client.RoleID = jionRoom.RoleID;
 
-            if(jionRoom.JionType == 0)
+            if (jionRoom.JionType == 0)
             {
                 RoomPlayersManager.Instance().AddTeamer(client);
             }
@@ -71,6 +74,44 @@ namespace Handler.CmdHandlers
                 RoomPlayersManager.Instance().AddEnemy(client);
             }
 
+            RoomServerJionRoomRsp RoomServerJionRoomRsp = new RoomServerJionRoomRsp()
+            {
+                Result = 0
+            };
+
+            CommonMessage commonMessage = new CommonMessage()
+            {
+                mCMD = CMDS.RoomServerJionRoomRsp,
+                mMessageBuffer = MessageBufHelper.GetBytes(RoomServerJionRoomRsp)
+            };
+            // RoomServerJionRoomRsp 发回复的
+            client.Send(commonMessage);
+        }
+
+        [CmdHandlerAttribute(CmdID = CMDS.RoomServerJionRoomRsp,
+            CMDType = CMDType.Client)]
+        public static void ProcessRoomServerJionRoomRsp(CommonClient client, CommonMessage message)
+        {
+            RoomServerJionRoomRsp jionRoom = message.GetObject<RoomServerJionRoomRsp>();
+            
+            if(jionRoom.Result == 0)
+            {
+
+            }
+
+            SynchronousInfo synchronousInfo = new SynchronousInfo()
+            {
+                Name = "client",
+                OperationInfo = "帧同步"
+            };
+
+            CommonMessage commonMessage = new CommonMessage()
+            {
+                mCMD = CMDS.FrameSynchronization,
+                mMessageBuffer = MessageBufHelper.GetBytes(synchronousInfo)
+            };
+
+            Test.RunAsync();
         }
 
         /// <summary>
@@ -107,7 +148,7 @@ namespace Handler.CmdHandlers
         /// <param name="client"></param>
         /// <param name="message"></param>
         [CmdHandlerAttribute(CmdID = CMDS.CSLogIn,
-            CMDType = CMDType.ServerAndClient)]
+            CMDType = CMDType.Server)]
         public static void ProcessCSLogIn(CommonClient client, CommonMessage message)
         {
             CSLogIn jionRoom = message.GetObject<CSLogIn>();
@@ -197,16 +238,19 @@ namespace Handler.CmdHandlers
             {
                 // 
             }
-
+            Console.WriteLine($"客户端登录房间服务器成功, 准备加入房间 JionRoom");
             JionRoom(client);
         }
 
         static void JionRoom(CommonClient client)
         {
+            Random ran = new Random();
+            int n = ran.Next(100, 1000);
+
             JionRoom joinRoom = new JionRoom()
             {
                 JionType = 0,
-                RoleID = 001
+                RoleID = n
             };
             byte[] result = MessageBufHelper.GetBytes(joinRoom);
             
@@ -217,6 +261,38 @@ namespace Handler.CmdHandlers
             };
 
             client.Send(message);
+        }
+    }
+
+    public class Test
+    {
+        public static async void RunAsync()
+        {
+            await Task.Run(Execute);
+        }
+
+        public static void Execute()
+        {
+            int i = 100;
+            while (i > 0)
+            {
+                SynchronousInfo synchronousInfo = new SynchronousInfo()
+                {
+                    Name = "client",
+                    OperationInfo = "帧同步"
+                };
+
+                CommonMessage commonMessage = new CommonMessage()
+                {
+                    mCMD = CMDS.FrameSynchronization,
+                    mMessageBuffer = MessageBufHelper.GetBytes(synchronousInfo)
+                };
+
+                RoomPlayersManager.Instance().BroadCast(commonMessage);
+
+                --i;
+                Thread.Sleep(2 * 1000);
+            }
         }
     }
 }

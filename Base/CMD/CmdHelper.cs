@@ -104,19 +104,29 @@ namespace Base
         /// <summary>
         /// 投递消息
         /// </summary>
-        public static void Fire(IChannelHandlerContext ctx, CommonMessage message)
+        public static void Fire(IChannelHandlerContext ctx, CommonMessage message, CommonClient toWho = null)
         {
             Action<CommonClient, CommonMessage> action = null;
 
-            var client = ClientManager.Instance().FindClient(ctx);
+            CommonClient client;
 
-            if(null == client)
+            if (null == toWho)
             {
-                // 不保证消息处理函数拿到的client都不为null
-                //return;
+                client = ClientManager.Instance().FindClient(ctx);
 
-                client = RoomClientManager.Instance().FindClient(ctx);
+                if (null == client)
+                {
+                    // 不保证消息处理函数拿到的client都不为null
+                    //return;
+                    client = RoomClientManager.Instance().FindClient(ctx);
+                }
             }
+            else
+            {
+                client = toWho;
+            }
+
+            
 
             if (mActions.TryGetValue(message.mCMD, out action))
             {
@@ -135,7 +145,7 @@ namespace Base
             Type realType = type.GetType();
             if (!mMessageTypes.TryGetValue(realType.ToString(), out parser))
             {
-                Console.WriteLine($"faild 未找到:{type} 对应的 Parser");
+                //Console.WriteLine($"faild 未找到:{type} 对应的 Parser");
             }
             return parser;
         }
@@ -150,7 +160,7 @@ namespace Base
             // Person -> ParseFrom 方法的映射 (根据Person 找到 反序列化根据Person的方法)
             if (mMessageTypes.TryAdd(messageTypeName, messageParser))
             {
-                Console.WriteLine($"AddMessageParser type:{messageTypeName} success");
+                //Console.WriteLine($"AddMessageParser type:{messageTypeName} success");
             }
             else
             {

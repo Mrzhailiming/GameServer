@@ -1,4 +1,6 @@
 ﻿using Base.BaseData;
+using Base.DataHelper;
+using ConnmonMessage;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,20 +33,35 @@ namespace Base.Client
             Console.WriteLine($"Add enemy RoleID:{enemy.RoleID}");
         }
 
+
+
         /// <summary>
-        /// 广播消息
+        /// 广播消息(房间服把自己客户端的操作同步给其他客户端)
         /// </summary>
         /// <param name="message"></param>
         public void BroadCast(CommonMessage message)
         {
-            foreach(CommonClient team in mTeamers.Values)
+            SynchronousInfo synchronousInfo = message.GetObject<SynchronousInfo>();
+            RoomServerSynchronousInfo roomServerSynchronousInfo = new RoomServerSynchronousInfo()
             {
-                team.Send(message);
+                Name = "这是房间服务器同步我的的玩家操作",
+                OperationInfo = synchronousInfo.OperationInfo
+            };
+
+            CommonMessage newMsg = new CommonMessage()
+            {
+                mCMD = CMDS.RoomServerFrameSynchronization,
+                mMessageBuffer = MessageBufHelper.GetBytes(roomServerSynchronousInfo)
+            };
+
+            foreach (CommonClient team in mTeamers.Values)
+            {
+                team.Send(newMsg);
             }
 
             foreach (CommonClient enemy in mEnemys.Values)
             {
-                enemy.Send(message);
+                enemy.Send(newMsg);
             }
         }
     }

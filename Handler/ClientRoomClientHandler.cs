@@ -13,7 +13,6 @@ namespace Handler
 {
     /// <summary>
     /// 连接其他客户端的房间服务器
-    /// 9 连 1
     /// </summary>
     public class ClientRoomClientHandler : SimpleChannelInboundHandler<CommonMessage>
     {
@@ -44,8 +43,12 @@ namespace Handler
         /// <param name="ctx"></param>
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
-            // 吧服务器加到队列里
-            ClientManager.Instance().AddCient(ctx);
+            // 设置自己连接的房间服务器
+            SocketInfo.Instance().mRoomServer = new CommonClient()
+            {
+                ctx = ctx,
+                Name = "roomserver"
+            };
             // 登录 加入其他房间服务器
             LogIn(ctx);
         }
@@ -54,7 +57,7 @@ namespace Handler
         {
             Console.WriteLine($"recv from clientRoomServer success {msg.mCMD}");
             // 投递
-            CmdHelper.Fire(ctx, msg);
+            CmdHelper.Fire(ctx, msg, SocketInfo.Instance().mRoomServer);
         }
     }
 }

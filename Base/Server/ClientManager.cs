@@ -71,7 +71,7 @@ namespace Base
 
             if (!mClientDic.TryGetValue(ctx, out client))
             {
-                Console.WriteLine($"not find Client {ctx.Channel.RemoteAddress}");
+                //Console.WriteLine($"not find Client {ctx.Channel.RemoteAddress}");
             }
 
             return client;
@@ -85,7 +85,7 @@ namespace Base
 
         public bool Match(long ticks)
         {
-            if (mOnLineClientDic.Count >= 1)
+            if (mOnLineClientDic.Count >= 2)
             {
                 List<string> ips = new List<string>();
                 List<string> ports = new List<string>();
@@ -97,8 +97,8 @@ namespace Base
 
                 SCJoinRoom scJoinRoom = new SCJoinRoom()
                 {
-                    //AllClient = $"{ips[0]}&{ports[0]}|{ips[1]}&{ports[1]}"
-                    AllClient = $"{ips[0]}&{ports[0]}"
+                    AllClient = $"{ips[0]}&{ports[0]}|{ips[1]}&{ports[1]}"
+                    //AllClient = $"{ips[0]}&{ports[0]}"
                 };
 
                 byte[] result = MessageBufHelper.GetBytes(scJoinRoom);

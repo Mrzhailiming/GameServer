@@ -11,48 +11,11 @@ using System.Threading;
 
 namespace Handler
 {
+    /// <summary>
+    /// 与中心服连接的Handler
+    /// </summary>
     public class ClientHandler : SimpleChannelInboundHandler<CommonMessage>
     {
-        public void TestSend(IChannelHandlerContext ctx)
-        {
-            Person person = new Person()
-            {
-                Name = "777",
-                Id = 10010,
-                Email = "44@qq.com"
-            };
-
-            SynchronousInfo synchronousInfo = new SynchronousInfo()
-            {
-                Name = "888",
-                OperationInfo = "frame sync"
-            };
-
-            byte[] result = new byte[synchronousInfo.CalculateSize()];
-            try
-            {
-                using (CodedOutputStream rawOutput = new CodedOutputStream(result))
-                {
-                    person.WriteTo(rawOutput);
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-
-
-            CommonMessage message = new CommonMessage()
-            {
-                mCMD = CMDS.FrameSynchronization,
-                mMessageBuffer = result
-            };
-
-
-            ctx.WriteAsync(message);
-
-            ctx.Flush();
-        }
-
         void LogIn(IChannelHandlerContext ctx)
         {
             CSLogIn logIn = new CSLogIn()
@@ -79,17 +42,19 @@ namespace Handler
             Console.WriteLine("connect success begin login");
             LogIn(ctx);
 
-            // 在这把服务器当做自己的维护的客户端, 加到 clientmanager 里, 能行
-            ClientManager.Instance().AddCient(ctx);
+            // 设置自己连接的 server
+            SocketInfo.Instance().mCenterServer = new CommonClient()
+            {
+                ctx = ctx,
+                Name = "centerserver",
+            };
         }
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
         {
-            Console.WriteLine($"recv from server success {msg.mCMD}");
+            //Console.WriteLine($"recv from server success {msg.mCMD}");
 
-            CmdHelper.Fire(ctx, msg);
-            //Thread.Sleep(100000000);
-            //TestSend(ctx);
+            CmdHelper.Fire(ctx, msg, SocketInfo.Instance().mCenterServer);
         }
     }
 }

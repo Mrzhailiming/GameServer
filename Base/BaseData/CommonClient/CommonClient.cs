@@ -31,10 +31,15 @@ namespace Base.BaseData
             // 让 TickManager tick CommonClient 的 Update
             TickManager.Instance().AddTickInfo(new TickInfo(Update, 1 * 1000, mClientTickInfos));
         }
-
+        /// <summary>
+        /// 服务器给客户端发消息用这个接口
+        /// </summary>
+        /// <param name="message"></param>
         public void Send(CommonMessage message)
         {
             ctx.WriteAndFlushAsync(message);
         }
+
+       
     }
 }

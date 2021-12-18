@@ -14,6 +14,9 @@ namespace Base
         SCLogIn = 6,    // 服务器回复登录结果
         RoomServerCSLogIn = 7,    // 玩家发起登录
         RoomServerSCLogIn = 8,    // 服务器回复登录结果
+
+        RoomServerFrameSynchronization = 9, // 房间服务器广播的消息
+        RoomServerJionRoomRsp = 10, // 房间服务器回复客户端加入房间结果
     }
     public enum CMDType : long
     {

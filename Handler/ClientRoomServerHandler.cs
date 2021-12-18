@@ -12,6 +12,7 @@ namespace Handler
     /// <summary>
     /// 房间服务器  9 个客户端连接过来
     /// 1 对 9
+    /// 负责把本客户端的操作广播给其他 9 个客户端
     /// </summary>
     public class ClientRoomServerHandler : SimpleChannelInboundHandler<CommonMessage>
     {
