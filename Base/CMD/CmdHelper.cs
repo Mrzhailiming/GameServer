@@ -18,8 +18,15 @@ namespace Base
         CmdHelper ServerCmdHelper { get; set; } = new CmdHelper();
         CmdHelper RoomServerCmdHelper { get; set; } = new CmdHelper();
 
+        private CMDSDispatcher mCMDSDispatcher;
+
+        /// <summary>
+        /// 对中心服务器来说, 没必要把所有的客户端要用的消息处理函数都注册了
+        /// </summary>
         public void Init()
         {
+            mCMDSDispatcher = new CMDSDispatcher();
+
             ClientCmdHelper.Init(CMDType.Client);
             RoomClientCmdHelper.Init(CMDType.RoomClient);
             ServerCmdHelper.Init(CMDType.Server);
@@ -27,23 +34,29 @@ namespace Base
         }
         public void FireClient(IChannelHandlerContext ctx, CommonMessage message)
         {
-            ClientCmdHelper.Fire(message, SocketInfo.Instance().mCenterServer);
+            ClientCmdHelper.Fire(mCMDSDispatcher, message, SocketInfo.Instance().mCenterServer);
         }
         public void FireRoomClient(IChannelHandlerContext ctx, CommonMessage message)
         {
             CommonClient roomServer;
             SocketInfo.Instance().mRoomServer.TryGetValue(ctx, out roomServer);
-            RoomClientCmdHelper.Fire(message, roomServer);
+            RoomClientCmdHelper.Fire(mCMDSDispatcher, message, roomServer);
         }
+
+        /// <summary>
+        /// 中心服务器用这个
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="message"></param>
         public void FireServer(IChannelHandlerContext ctx, CommonMessage message)
         {
             CommonClient client = ClientManager.Instance().FindClient(ctx);
-            ServerCmdHelper.Fire(message, client);
+            ServerCmdHelper.Fire(mCMDSDispatcher, message, client);
         }
         public void FireRoomServer(IChannelHandlerContext ctx, CommonMessage message)
         {
             CommonClient client = RoomClientManager.Instance().FindClient(ctx);
-            RoomServerCmdHelper.Fire(message, client);
+            RoomServerCmdHelper.Fire(mCMDSDispatcher, message, client);
         }
         public void AddMessageParser(string messageTypeName, MessageParser messageParser)
         {
@@ -69,11 +82,9 @@ namespace Base
         // 与 cmd 对应的 handler
         private Dictionary<CMDS, Action<CommonClient, CommonMessage>> mActions;
 
-        private CMDSDispatcher mCMDSDispatcher;
         public void Init(CMDType cMDType)
         {
             mActions = new Dictionary<CMDS, Action<CommonClient, CommonMessage>>();
-            mCMDSDispatcher = new CMDSDispatcher();
 
             InitMessageHandler(cMDType);
         }
@@ -124,7 +135,7 @@ namespace Base
         /// <summary>
         /// 投递消息
         /// </summary>
-        public void Fire(CommonMessage message, CommonClient toWho)
+        public void Fire(CMDSDispatcher mCMDSDispatcher, CommonMessage message, CommonClient toWho)
         {
             Action<CommonClient, CommonMessage> action = null;
 

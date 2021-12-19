@@ -12,6 +12,13 @@ namespace Base.BaseData
     public partial class CommonClient
     {
         /// <summary>
+        /// 记录客户端上次心跳的时间
+        /// </summary>
+        public long PrevHeartBeatTick { get; set; } = 0;
+
+        public bool IsOffLine { get; set; } = false;
+
+        /// <summary>
         /// 维护自己的 tickinfo
         /// 心跳应不应该在client里做?
         /// </summary>

@@ -24,21 +24,21 @@ namespace ConnmonMessage {
     static TestReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFwcm90b3MvdGVzdC5wcm90byIxCgZQZXJzb24SDAoEbmFtZRgBIAEoCRIK",
-            "CgJpZBgCIAEoBRINCgVlbWFpbBgDIAEoCSI2Cg9TeW5jaHJvbm91c0luZm8S",
-            "DAoEbmFtZRgBIAEoCRIVCg1vcGVyYXRpb25JbmZvGAIgASgJIiwKDFJDUlNK",
-            "aW9uUm9vbRIOCgZyb2xlSUQYASABKAMSDAoEY2FtcBgCIAEoCSIhCg9SU1JD",
-            "SmlvblJvb21Sc3ASDgoGUmVzdWx0GAEgASgFIjcKB0NTTG9nSW4SFAoMUm9v",
-            "bVNlcnZlcklQGAEgASgJEhYKDlJvb21TZXJ2ZXJQb3J0GAIgASgFIikKB1ND",
-            "TG9nSW4SDgoGcm9sZUlEGAEgASgFEg4KBnJlc3VsdBgCIAEoBSIZCgdDU01h",
-            "dGNoEg4KBnJvbGVJRBgBIAEoBSIcCgdTQ01hdGNoEhEKCWFsbENsaWVudBgB",
-            "IAEoCSJIChNSU1JDU3luY2hyb25vdXNJbmZvEgwKBG5hbWUYASABKAkSFQoN",
-            "b3BlcmF0aW9uSW5mbxgCIAEoCRIMCgRjYW1wGAMgASgJQhGqAg5Db25ubW9u",
-            "TWVzc2FnZWIGcHJvdG8z"));
+            "ChFwcm90b3MvdGVzdC5wcm90byIoCglIZWFydEJlYXQSDQoFc3RhdGUYASAB",
+            "KAkSDAoEdGljaxgCIAEoAyI2Cg9TeW5jaHJvbm91c0luZm8SDAoEbmFtZRgB",
+            "IAEoCRIVCg1vcGVyYXRpb25JbmZvGAIgASgJIiwKDFJDUlNKaW9uUm9vbRIO",
+            "CgZyb2xlSUQYASABKAMSDAoEY2FtcBgCIAEoCSIhCg9SU1JDSmlvblJvb21S",
+            "c3ASDgoGUmVzdWx0GAEgASgFIjcKB0NTTG9nSW4SFAoMUm9vbVNlcnZlcklQ",
+            "GAEgASgJEhYKDlJvb21TZXJ2ZXJQb3J0GAIgASgFIikKB1NDTG9nSW4SDgoG",
+            "cm9sZUlEGAEgASgFEg4KBnJlc3VsdBgCIAEoBSIZCgdDU01hdGNoEg4KBnJv",
+            "bGVJRBgBIAEoBSIcCgdTQ01hdGNoEhEKCWFsbENsaWVudBgBIAEoCSJIChNS",
+            "U1JDU3luY2hyb25vdXNJbmZvEgwKBG5hbWUYASABKAkSFQoNb3BlcmF0aW9u",
+            "SW5mbxgCIAEoCRIMCgRjYW1wGAMgASgJQhGqAg5Db25ubW9uTWVzc2FnZWIG",
+            "cHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.Person), global::ConnmonMessage.Person.Parser, new[]{ "Name", "Id", "Email" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.HeartBeat), global::ConnmonMessage.HeartBeat.Parser, new[]{ "State", "Tick" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.SynchronousInfo), global::ConnmonMessage.SynchronousInfo.Parser, new[]{ "Name", "OperationInfo" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.RCRSJionRoom), global::ConnmonMessage.RCRSJionRoom.Parser, new[]{ "RoleID", "Camp" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.RSRCJionRoomRsp), global::ConnmonMessage.RSRCJionRoomRsp.Parser, new[]{ "Result" }, null, null, null, null),
@@ -53,16 +53,16 @@ namespace ConnmonMessage {
 
   }
   #region Messages
-  public sealed partial class Person : pb::IMessage<Person>
+  public sealed partial class HeartBeat : pb::IMessage<HeartBeat>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<Person> _parser = new pb::MessageParser<Person>(() => new Person());
+    private static readonly pb::MessageParser<HeartBeat> _parser = new pb::MessageParser<HeartBeat>(() => new HeartBeat());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<Person> Parser { get { return _parser; } }
+    public static pb::MessageParser<HeartBeat> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -78,7 +78,7 @@ namespace ConnmonMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Person() {
+    public HeartBeat() {
       OnConstruction();
     }
 
@@ -86,76 +86,59 @@ namespace ConnmonMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Person(Person other) : this() {
-      name_ = other.name_;
-      id_ = other.id_;
-      email_ = other.email_;
+    public HeartBeat(HeartBeat other) : this() {
+      state_ = other.state_;
+      tick_ = other.tick_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Person Clone() {
-      return new Person(this);
+    public HeartBeat Clone() {
+      return new HeartBeat(this);
     }
 
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 1;
-    private string name_ = "";
+    /// <summary>Field number for the "state" field.</summary>
+    public const int StateFieldNumber = 1;
+    private string state_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Name {
-      get { return name_; }
+    public string State {
+      get { return state_; }
       set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        state_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
-    /// <summary>Field number for the "id" field.</summary>
-    public const int IdFieldNumber = 2;
-    private int id_;
-    /// <summary>
-    /// Unique ID number for this person.
-    /// </summary>
+    /// <summary>Field number for the "tick" field.</summary>
+    public const int TickFieldNumber = 2;
+    private long tick_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Id {
-      get { return id_; }
+    public long Tick {
+      get { return tick_; }
       set {
-        id_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "email" field.</summary>
-    public const int EmailFieldNumber = 3;
-    private string email_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Email {
-      get { return email_; }
-      set {
-        email_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        tick_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as Person);
+      return Equals(other as HeartBeat);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(Person other) {
+    public bool Equals(HeartBeat other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Name != other.Name) return false;
-      if (Id != other.Id) return false;
-      if (Email != other.Email) return false;
+      if (State != other.State) return false;
+      if (Tick != other.Tick) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -163,9 +146,8 @@ namespace ConnmonMessage {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (Id != 0) hash ^= Id.GetHashCode();
-      if (Email.Length != 0) hash ^= Email.GetHashCode();
+      if (State.Length != 0) hash ^= State.GetHashCode();
+      if (Tick != 0L) hash ^= Tick.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -184,17 +166,13 @@ namespace ConnmonMessage {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Name.Length != 0) {
+      if (State.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(Name);
+        output.WriteString(State);
       }
-      if (Id != 0) {
+      if (Tick != 0L) {
         output.WriteRawTag(16);
-        output.WriteInt32(Id);
-      }
-      if (Email.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Email);
+        output.WriteInt64(Tick);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -206,17 +184,13 @@ namespace ConnmonMessage {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Name.Length != 0) {
+      if (State.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(Name);
+        output.WriteString(State);
       }
-      if (Id != 0) {
+      if (Tick != 0L) {
         output.WriteRawTag(16);
-        output.WriteInt32(Id);
-      }
-      if (Email.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Email);
+        output.WriteInt64(Tick);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -228,14 +202,11 @@ namespace ConnmonMessage {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      if (State.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(State);
       }
-      if (Id != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
-      }
-      if (Email.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Email);
+      if (Tick != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Tick);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -245,18 +216,15 @@ namespace ConnmonMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(Person other) {
+    public void MergeFrom(HeartBeat other) {
       if (other == null) {
         return;
       }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
+      if (other.State.Length != 0) {
+        State = other.State;
       }
-      if (other.Id != 0) {
-        Id = other.Id;
-      }
-      if (other.Email.Length != 0) {
-        Email = other.Email;
+      if (other.Tick != 0L) {
+        Tick = other.Tick;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -274,15 +242,11 @@ namespace ConnmonMessage {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            Name = input.ReadString();
+            State = input.ReadString();
             break;
           }
           case 16: {
-            Id = input.ReadInt32();
-            break;
-          }
-          case 26: {
-            Email = input.ReadString();
+            Tick = input.ReadInt64();
             break;
           }
         }
@@ -301,15 +265,11 @@ namespace ConnmonMessage {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            Name = input.ReadString();
+            State = input.ReadString();
             break;
           }
           case 16: {
-            Id = input.ReadInt32();
-            break;
-          }
-          case 26: {
-            Email = input.ReadString();
+            Tick = input.ReadInt64();
             break;
           }
         }

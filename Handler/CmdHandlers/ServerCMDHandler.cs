@@ -13,6 +13,20 @@ namespace Handler.CmdHandlers
     public class ServerCMDHandler
     {
         /// <summary>
+        /// 心跳
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="message"></param>
+        [CmdHandlerAttribute(CmdID = CMDS.HeartBeat)]
+        public static void ProcessHeartBeat(CommonClient client, CommonMessage message)
+        {
+            HeartBeat heartBeat = message.GetObject<HeartBeat>();
+
+            client.PrevHeartBeatTick = heartBeat.Tick;
+
+            Console.WriteLine($"server recv heartbeat");
+        }
+        /// <summary>
         /// 服务器
         /// 玩家登录
         /// </summary>

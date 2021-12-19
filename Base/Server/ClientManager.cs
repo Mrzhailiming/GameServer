@@ -11,6 +11,10 @@ using System.Text;
 
 namespace Base
 {
+    /// <summary>
+    /// server用
+    /// 管理所有玩家
+    /// </summary>
     public class ClientManager : Singletion<ClientManager>
     {
         /// <summary>
@@ -26,16 +30,26 @@ namespace Base
             new Dictionary<IChannelHandlerContext, CommonClient>();
 
         /// <summary>
+        /// 离线玩家
+        /// </summary>
+        private Dictionary<IChannelHandlerContext, CommonClient> mOffLineClientDic =
+            new Dictionary<IChannelHandlerContext, CommonClient>();
+
+        /// <summary>
         /// 正在匹配的玩家
         /// </summary>
         private LinkedList<CommonClient> mOnMatchClients =
             new LinkedList<CommonClient>();
 
-        private TickInfos mClientTickInfos;
-        public void BeginMatchTick()
+        private TickInfos mServerTickInfos;
+        public void BeginTick()
         {
-            mClientTickInfos = new TickInfos(this);
-            TickManager.Instance().AddTickInfo(new TickInfo(Match, 1 * 1000, mClientTickInfos));
+            mServerTickInfos = new TickInfos(this);
+            // 增加匹配的tick
+            mServerTickInfos.AddTick(new TickInfo(Match, 3 * 1000, mServerTickInfos));
+            mServerTickInfos.AddTick(new TickInfo(HeartBeat, 1 * 1000, mServerTickInfos));
+
+            TickManager.Instance().AddTickInfo(new TickInfo(Update, 1 * 1000, mServerTickInfos));
             Console.WriteLine($"begin match tick");
         }
 
@@ -93,6 +107,34 @@ namespace Base
         public void AddMatchClient(CommonClient client)
         {
             mOnMatchClients.AddLast(client);
+        }
+
+        bool Update(long ticks)
+        {
+            mServerTickInfos.DoTick(ticks);
+            return true;
+        }
+
+        /// <summary>
+        /// 检测客户端的心跳
+        /// 超过几次, 就移除客户端
+        /// </summary>
+        /// <param name="ticks"></param>
+        /// <returns></returns>
+        bool HeartBeat(long ticks)
+        {
+            long nowTick = DateTime.Now.Ticks; // 100ns
+            foreach(var client in mOnLineClientDic.Values)
+            {
+                if(!client.IsOffLine // 不是离线状态
+                    && client.PrevHeartBeatTick != 0 // 客户端同步过一次 tick (如果客户端一次都没同步过, 那不就啦垮了)
+                    && nowTick - client.PrevHeartBeatTick > 2 * 1000 * 1000 * 10) // 2s 没有心跳才设置离线
+                {
+                    client.IsOffLine = true;
+                    mOffLineClientDic.TryAdd(client.ctx, client);
+                }
+            }
+            return true;
         }
 
         bool Match(long ticks)

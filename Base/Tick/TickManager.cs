@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Base.Tick
@@ -47,43 +44,41 @@ namespace Base.Tick
         {
             while (true)
             {
-
-                var node = mTickInfos.First;
-
-                while (null != node)
+                try
                 {
-                    TickInfo tick = node.Value;
+                    var node = mTickInfos.First;
 
-                    if (!tick.DoTick(0))
+                    while (null != node)
                     {
-                        Console.WriteLine($"移除tick owner:{tick.mOwner}");
-                        mTickInfos.Remove(tick);
+                        TickInfo tick = node.Value;
+                        bool ret = true;
+                        try
+                        {
+                            ret = tick.DoTick(0);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"TickManager Execute DoTick 出现异常\r\n" +
+                                $"{ex}");
+                            ret = false;
+                        }
+                        finally
+                        {
+                            if (!ret)
+                            {
+                                Console.WriteLine($"移除tick owner:{tick.mOwner}");
+                                mTickInfos.Remove(tick);
+                            }
+                        }
 
-                        // 如果 mTickList.count = 0, 不应该让 TickManager 移除此TickInfos
-                        //IsEffective = false;
+                        node = node.Next;
                     }
-
-                    node = node.Next;
                 }
-                // 会不会迭代器失效?
-                //foreach (var tickInfo in mTickInfos)
-                //{
-                //    try
-                //    {
-                //        // 我只负责调你的 func 有没有到时间间隔, 你自己把控
-                //        // 我不想把控, 也把控不了啊
-                //        // 不可能把你们所有的时间间隔都记下来吧, 不可能
-                //        tickInfo.DoTick(0);
-
-                //    }
-                //    catch (Exception ex)
-                //    {
-
-                //        Console.WriteLine($"TickManager.Execute tickInfos.DoTicks()\r\n" +
-                //            $"{ex}");
-                //    }
-                //}
-
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"TickManager Execute 出现异常\r\n" +
+                        $"{ex}");
+                }
             }
         }
     }

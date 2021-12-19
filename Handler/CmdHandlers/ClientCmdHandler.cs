@@ -3,6 +3,7 @@ using Base.Attributes;
 using Base.BaseData;
 using Base.Client;
 using Base.DataHelper;
+using Base.Tick;
 using ConnmonMessage;
 using Google.Protobuf;
 using System;
@@ -21,7 +22,7 @@ namespace Handler.CmdHandlers
         [CmdHandlerAttribute(CmdID = CMDS.Test)]
         public static void Process(CommonClient client, CommonMessage message)
         {
-            Person person = message.GetObject<Person>();
+            //Person person = message.GetObject<Person>();
         }
 
         /// <summary>
@@ -69,6 +70,11 @@ namespace Handler.CmdHandlers
             }
 
             Console.WriteLine($"登录成功");
+
+            // 开启心跳
+            TickManager.Instance().AddTickInfo(new TickInfo(HeartBeatHandler, 1 * 1000, null));
+
+            // 开始发送匹配请求
             CSMatch match = new CSMatch()
             {
                 RoleID = Convert.ToInt32(ClientInfo.MyClientServerPort)
@@ -82,6 +88,26 @@ namespace Handler.CmdHandlers
 
             client.Send(matchMsg);
             Console.WriteLine($"开始匹配...");
+        }
+
+
+        private static bool HeartBeatHandler(long ticks)
+        {
+            HeartBeat heartBeat = new HeartBeat()
+            {
+                State = "1",
+                Tick = DateTime.Now.Ticks
+            };
+
+            CommonMessage message = new CommonMessage()
+            {
+                mCMD = CMDS.HeartBeat,
+                mMessageBuffer = MessageBufHelper.GetBytes(heartBeat)
+            };
+
+            SocketInfo.Instance().mCenterServer.Send(message);
+            Console.WriteLine($"client send heartbeat");
+            return true;
         }
     }
 }

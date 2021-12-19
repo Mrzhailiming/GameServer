@@ -12,7 +12,8 @@ using System.Text;
 namespace Base
 {
     /// <summary>
-    /// 管理房间玩家, 一个客户端一个
+    /// RoomServer用
+    /// 管理房间玩家
     /// </summary>
     public class RoomClientManager : Singletion<RoomClientManager>
     {
@@ -30,6 +31,10 @@ namespace Base
 
         private TickInfos mRoomTickInfos;
 
+        /// <summary>
+        /// 等所有玩家都进入好彼此的房间服务器之后, 执行gaming
+        /// 这个信号由中心服发?
+        /// </summary>
         public void BeginGameTick()
         {
             mRoomTickInfos = new TickInfos(this);

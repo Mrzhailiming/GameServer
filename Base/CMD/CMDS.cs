@@ -8,6 +8,8 @@ namespace Base
     {
         Test = 1,
 
+        HeartBeat, // 心跳
+
         #region Client Server
 
         CSLogIn,    // 玩家发起登录

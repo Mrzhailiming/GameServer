@@ -46,21 +46,19 @@ namespace Server
 
                 IChannel bootstrapChannel = await bootstrap.BindAsync(8888);
 
-                Console.WriteLine("key to quit");
-                Console.ReadKey();
+                //Console.WriteLine("key to quit");
+                //Console.ReadKey();
 
-                await bootstrapChannel.CloseAsync();
+                //await bootstrapChannel.CloseAsync();
             }
             finally
             {
-                Task.WaitAll(bossGroup.ShutdownGracefullyAsync(), workerGroup.ShutdownGracefullyAsync());
+                //Task.WaitAll(bossGroup.ShutdownGracefullyAsync(), workerGroup.ShutdownGracefullyAsync());
             }
         }
 
         public static void Main()
         {
-            
-
             InitServer();
 
             RunServerAsync().Wait();
@@ -70,7 +68,7 @@ namespace Server
         {
 
             CMDHelperManager.Instance().Init();
-            ClientManager.Instance().BeginMatchTick();
+            ClientManager.Instance().BeginTick();
 
             TickManager.Instance().RunAsync();
         }
