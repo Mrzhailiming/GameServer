@@ -21,7 +21,13 @@ namespace Base.BaseData
 
         public IChannelHandlerContext ctx { get; set; }
 
+        /// <summary>
+        /// 如果是客户端, 则客户端会发给服务器自己的房间服务器IP
+        /// </summary>
         public string RoomServerIP { get; set; }
+        /// <summary>
+        /// 如果是客户端, 则客户端会发给服务器自己的房间服务器Port
+        /// </summary>
         public string RoomServerPort { get; set; }
 
         public CommonClient()

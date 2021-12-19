@@ -41,6 +41,7 @@ namespace Base
                 ChannelManager.Instance().ChannelToCenterServer = new MyChannel()
                 {
                     Channel = bootstrapChannel,
+                    channelType = ChannelType.Server,
                     Groups = new List<MultithreadEventLoopGroup>() { group }
                 };
 
@@ -136,6 +137,7 @@ namespace Base
                 ChannelManager.Instance().ChannelToRoomServers.Add(RoomServerCount++, new MyChannel()
                 {
                     Channel = bootstrapChannel,
+                    channelType = ChannelType.RoomServer,
                     Groups = new List<MultithreadEventLoopGroup>() { group }
                 });
 

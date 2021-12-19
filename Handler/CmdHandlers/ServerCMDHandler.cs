@@ -30,6 +30,19 @@ namespace Handler.CmdHandlers
             BackLogin(client);
         }
 
+        /// <summary>
+        /// 客户端发起匹配
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="message"></param>
+        [CmdHandlerAttribute(CmdID = CMDS.CSMatch)]
+        public static void ProcessCSMatch(CommonClient client, CommonMessage message)
+        {
+            CSMatch match = message.GetObject<CSMatch>();
+
+            ClientManager.Instance().AddMatchClient(client);
+        }
+
         static void BackLogin(CommonClient client)
         {
             SCLogIn SCLogIn = new SCLogIn()

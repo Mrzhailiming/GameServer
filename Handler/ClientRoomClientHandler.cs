@@ -29,7 +29,7 @@ namespace Handler
 
             CommonMessage message = new CommonMessage()
             {
-                mCMD = CMDS.RoomServerCSLogIn,
+                mCMD = CMDS.RCRSLogIn,
                 mMessageBuffer = result
             };
 
@@ -44,18 +44,22 @@ namespace Handler
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
             // 设置自己连接的房间服务器
-            SocketInfo.Instance().mRoomServer.Add(ctx, new CommonClient()
+            CommonClient RoomServer = new CommonClient()
             {
                 ctx = ctx,
-                Name = "roomserver"
-            });
+                Name = "roomserver",
+                ClientEndPoint = ctx.Channel.RemoteAddress
+            };
+
+            SocketInfo.Instance().mRoomServer.Add(ctx, RoomServer);
+
             // 登录 加入其他房间服务器
             LogIn(ctx);
         }
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
         {
-            Console.WriteLine($"recv from clientRoomServer success {msg.mCMD}");
+            //Console.WriteLine($"recv from clientRoomServer success {msg.mCMD}");
             // 投递
             CMDHelperManager.Instance().FireRoomClient(ctx, msg);
         }

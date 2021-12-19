@@ -25,6 +25,12 @@ namespace Base
         private Dictionary<IChannelHandlerContext, CommonClient> mOnLineClientDic =
             new Dictionary<IChannelHandlerContext, CommonClient>();
 
+        /// <summary>
+        /// 正在匹配的玩家
+        /// </summary>
+        private LinkedList<CommonClient> mOnMatchClients =
+            new LinkedList<CommonClient>();
+
         private TickInfos mClientTickInfos;
         public void BeginMatchTick()
         {
@@ -82,30 +88,73 @@ namespace Base
             return mOnLineClientDic;
         }
 
+        public const int PerMatchNum = 4;
 
-        public bool Match(long ticks)
+        public void AddMatchClient(CommonClient client)
         {
-            if (mOnLineClientDic.Count >= 2)
+            mOnMatchClients.AddLast(client);
+        }
+
+        bool Match(long ticks)
+        {
+            if (mOnMatchClients.Count >= PerMatchNum)
             {
                 List<string> ips = new List<string>();
                 List<string> ports = new List<string>();
-                foreach (var client in mClientDic.Values)
+
+                LinkedListNode<CommonClient> node = mOnMatchClients.First;
+
+                List<CommonClient> RedTeam = new List<CommonClient>();
+                List<CommonClient> BlueTeam = new List<CommonClient>();
+
+                for(int count = 0; count < PerMatchNum; ++count)
                 {
-                    ips.Add(client.RoomServerIP);
-                    ports.Add(client.RoomServerPort);
+                    if(null == node)
+                    {
+                        break;
+                    }
+
+                    if(count % 2 == 0)
+                    {
+                        RedTeam.Add(node.Value);
+                    }
+                    else
+                    {
+                        BlueTeam.Add(node.Value);
+                    }
+
+                    var RemoveNode = node;
+                    node = node.Next;
+
+                    mOnMatchClients.Remove(RemoveNode);
                 }
 
-                SCJoinRoom scJoinRoom = new SCJoinRoom()
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach(CommonClient client in RedTeam)
                 {
-                    AllClient = $"{ips[0]}&{ports[0]}|{ips[1]}&{ports[1]}"
-                    //AllClient = $"{ips[0]}&{ports[0]}"
+                    stringBuilder.Append(client.RoomServerIP).Append("&");
+                    stringBuilder.Append(client.RoomServerPort).Append("&");
+                    stringBuilder.Append("Red").Append("|");
+                }
+
+                foreach (CommonClient client in BlueTeam)
+                {
+                    stringBuilder.Append(client.RoomServerIP).Append("&");
+                    stringBuilder.Append(client.RoomServerPort).Append("&");
+                    stringBuilder.Append("Blue").Append("|");
+                }
+
+                SCMatch scJoinRoom = new SCMatch()
+                {
+                    AllClient = stringBuilder.ToString()
                 };
 
                 byte[] result = MessageBufHelper.GetBytes(scJoinRoom);
 
                 CommonMessage message = new CommonMessage()
                 {
-                    mCMD = CMDS.SCJionRoom,
+                    mCMD = CMDS.SCMatch,
                     mMessageBuffer = result
                 };
 
@@ -113,9 +162,7 @@ namespace Base
                 {
                     client.Send(message);
                 }
-                Console.WriteLine($"match success, end match");
-
-                return false; // 先匹配一次, 逻辑还得改
+                Console.WriteLine($"match success");
             }
 
             return true;

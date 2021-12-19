@@ -20,7 +20,7 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.FrameSynchronization)]
+        [CmdHandlerAttribute(CmdID = CMDS.RCRSFrameSynchronization)]
         public static void ProcessFrameSynchronization(CommonClient client, CommonMessage message)
         {
             Console.WriteLine($"roomserver recv roomclient FrameSynchronization");
@@ -31,29 +31,29 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.JionRoom)]
+        [CmdHandlerAttribute(CmdID = CMDS.RCRSJionRoom)]
         public static void ProcessJionRoom(CommonClient client, CommonMessage message)
         {
-            JionRoom jionRoom = message.GetObject<JionRoom>();
+            RCRSJionRoom jionRoom = message.GetObject<RCRSJionRoom>();
             client.RoleID = jionRoom.RoleID;
 
-            if (jionRoom.JionType == 0)
+            if (jionRoom.Camp == ClientInfo.MyCamp) // 队友
             {
                 RoomPlayersManager.Instance().AddTeamer(client);
             }
-            else
+            else // 敌人
             {
                 RoomPlayersManager.Instance().AddEnemy(client);
             }
 
-            RoomServerJionRoomRsp RoomServerJionRoomRsp = new RoomServerJionRoomRsp()
+            RSRCJionRoomRsp RoomServerJionRoomRsp = new RSRCJionRoomRsp()
             {
                 Result = 0
             };
 
             CommonMessage commonMessage = new CommonMessage()
             {
-                mCMD = CMDS.RoomServerJionRoomRsp,
+                mCMD = CMDS.RSRCJionRoomRsp,
                 mMessageBuffer = MessageBufHelper.GetBytes(RoomServerJionRoomRsp)
             };
             // RoomServerJionRoomRsp 发回复的
@@ -65,7 +65,7 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.RoomServerCSLogIn)]
+        [CmdHandlerAttribute(CmdID = CMDS.RCRSLogIn)]
         public static void ProcessRoomServerCSLogIn(CommonClient client, CommonMessage message)
         {
             CSLogIn jionRoom = message.GetObject<CSLogIn>();
@@ -88,7 +88,7 @@ namespace Handler.CmdHandlers
 
             CommonMessage message = new CommonMessage()
             {
-                mCMD = CMDS.RoomServerSCLogIn,
+                mCMD = CMDS.RSRCLogIn,
                 mMessageBuffer = result
             };
 

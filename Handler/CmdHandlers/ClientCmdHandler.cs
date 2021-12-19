@@ -29,19 +29,20 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.SCJionRoom)]
+        [CmdHandlerAttribute(CmdID = CMDS.SCMatch)]
         public static void ProcessSCJionRoom(CommonClient client, CommonMessage message)
         {
-            SCJoinRoom jionRoom = message.GetObject<SCJoinRoom>();
+            SCMatch jionRoom = message.GetObject<SCMatch>();
 
-
-            List<IPPort> toConnect = IPParserHelper.StringIPPort(jionRoom.AllClient);
+            List<IPPort> toConnect = IPParserHelper.StringIPPortCamp(jionRoom.AllClient);
 
             foreach(IPPort iPPort in toConnect)
             {
-                // 不要连接自己的房间
-                if(iPPort.Port == ClientInfo.MyClientServerPort)
+                // 不要连接自己的 房间服务器
+                if(iPPort.Port == ClientInfo.MyClientServerPort
+                    && iPPort.IP == ClientInfo.MyClientServerIP)
                 {
+                    ClientInfo.MyCamp = iPPort.Camp; // 记录我的阵营
                     continue;
                 }
                 IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse(iPPort.IP),Convert.ToInt32(iPPort.Port));
@@ -68,6 +69,19 @@ namespace Handler.CmdHandlers
             }
 
             Console.WriteLine($"登录成功");
+            CSMatch match = new CSMatch()
+            {
+                RoleID = Convert.ToInt32(ClientInfo.MyClientServerPort)
+            };
+
+            CommonMessage matchMsg = new CommonMessage()
+            {
+                mCMD = CMDS.CSMatch,
+                mMessageBuffer = MessageBufHelper.GetBytes(match)
+            };
+
+            client.Send(matchMsg);
+            Console.WriteLine($"开始匹配...");
         }
     }
 }

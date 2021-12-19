@@ -6,6 +6,7 @@ using Base.DataHelper;
 using ConnmonMessage;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,11 +21,11 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.RoomServerFrameSynchronization)]
-        public static void ProcessServerFrameSynchronization(CommonClient client, CommonMessage message)
+        [CmdHandlerAttribute(CmdID = CMDS.RSRCFrameSynchronization)]
+        public static void ProcessRSRCFrameSynchronization(CommonClient client, CommonMessage message)
         {
-            RoomServerSynchronousInfo roomServerSynchronousInfo = message.GetObject<RoomServerSynchronousInfo>();
-            Console.WriteLine($"RoomClient recv roomserver  FrameSynchronization:{roomServerSynchronousInfo.OperationInfo}");
+            RSRCSynchronousInfo roomServerSynchronousInfo = message.GetObject<RSRCSynchronousInfo>();
+            Console.WriteLine($"RoomClient recv roomserver  FrameSynchronization camp:{roomServerSynchronousInfo.Camp}info:{roomServerSynchronousInfo.OperationInfo}");
         }
 
         /// <summary>
@@ -32,10 +33,10 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.RoomServerJionRoomRsp)]
-        public static void ProcessRoomServerJionRoomRsp(CommonClient client, CommonMessage message)
+        [CmdHandlerAttribute(CmdID = CMDS.RSRCJionRoomRsp)]
+        public static void ProcessRSRCJionRoomRsp(CommonClient client, CommonMessage message)
         {
-            RoomServerJionRoomRsp jionRoom = message.GetObject<RoomServerJionRoomRsp>();
+            RSRCJionRoomRsp jionRoom = message.GetObject<RSRCJionRoomRsp>();
 
             if (jionRoom.Result == 0)
             {
@@ -45,12 +46,12 @@ namespace Handler.CmdHandlers
             SynchronousInfo synchronousInfo = new SynchronousInfo()
             {
                 Name = "client",
-                OperationInfo = "帧同步"
+                OperationInfo = "帧同步",
             };
 
             CommonMessage commonMessage = new CommonMessage()
             {
-                mCMD = CMDS.FrameSynchronization,
+                mCMD = CMDS.RCRSFrameSynchronization,
                 mMessageBuffer = MessageBufHelper.GetBytes(synchronousInfo)
             };
 
@@ -62,7 +63,7 @@ namespace Handler.CmdHandlers
         /// </summary>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        [CmdHandlerAttribute(CmdID = CMDS.RoomServerSCLogIn)]
+        [CmdHandlerAttribute(CmdID = CMDS.RSRCLogIn)]
         public static void ProcessRoomServerSCLogIn(CommonClient client, CommonMessage message)
         {
             SCLogIn SCLogIn = message.GetObject<SCLogIn>();
@@ -80,16 +81,20 @@ namespace Handler.CmdHandlers
             Random ran = new Random();
             int n = ran.Next(100, 1000);
 
-            JionRoom joinRoom = new JionRoom()
+            string ip = IPParserHelper.StringIP(((IPEndPoint)client.ClientEndPoint).Address.ToString());
+            string port = ((IPEndPoint)client.ClientEndPoint).Port.ToString();
+
+
+            RCRSJionRoom joinRoom = new RCRSJionRoom()
             {
-                JionType = 0,
+                Camp = ClientInfo.MyCamp, // 告诉房间服务器 我的阵营
                 RoleID = n
             };
             byte[] result = MessageBufHelper.GetBytes(joinRoom);
 
             CommonMessage message = new CommonMessage()
             {
-                mCMD = CMDS.JionRoom,
+                mCMD = CMDS.RCRSJionRoom,
                 mMessageBuffer = result
             };
 
@@ -117,7 +122,7 @@ namespace Handler.CmdHandlers
 
                 CommonMessage commonMessage = new CommonMessage()
                 {
-                    mCMD = CMDS.FrameSynchronization,
+                    mCMD = CMDS.RCRSFrameSynchronization,
                     mMessageBuffer = MessageBufHelper.GetBytes(synchronousInfo)
                 };
 

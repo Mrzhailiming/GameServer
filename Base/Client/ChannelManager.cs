@@ -25,6 +25,8 @@ namespace Base.Client
     {
         public IChannel Channel { get; set; } = null;
 
+        public ChannelType channelType { get; set; }
+
         public List<MultithreadEventLoopGroup> Groups { get; set; } = null;
 
         public void ShutDown()
@@ -42,5 +44,11 @@ namespace Base.Client
                 }
             }
         }
+    }
+
+    public enum ChannelType
+    {
+        Server,
+        RoomServer,
     }
 }

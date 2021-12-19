@@ -42,26 +42,43 @@ namespace Base.Client
         public void BroadCast(CommonMessage message)
         {
             SynchronousInfo synchronousInfo = message.GetObject<SynchronousInfo>();
-            RoomServerSynchronousInfo roomServerSynchronousInfo = new RoomServerSynchronousInfo()
+            RSRCSynchronousInfo RSRCSynchronousInfo = new RSRCSynchronousInfo()
             {
-                Name = "这是房间服务器同步我的的玩家操作",
-                OperationInfo = synchronousInfo.OperationInfo
+                Name = synchronousInfo.Name,
+                OperationInfo = synchronousInfo.OperationInfo,
+                Camp = ClientInfo.MyCamp
             };
 
-            CommonMessage newMsg = new CommonMessage()
+            //RSRCSynchronousInfo.Camp = "Team";
+
+            //CommonMessage TeamMsg = new CommonMessage()
+            //{
+            //    mCMD = CMDS.RSRCFrameSynchronization,
+            //    mMessageBuffer = MessageBufHelper.GetBytes(RSRCSynchronousInfo)
+            //};
+
+            //RSRCSynchronousInfo.Camp = "Enemy";
+
+            //CommonMessage enemyMsg = new CommonMessage()
+            //{
+            //    mCMD = CMDS.RSRCFrameSynchronization,
+            //    mMessageBuffer = MessageBufHelper.GetBytes(RSRCSynchronousInfo)
+            //};
+
+            CommonMessage TeamMsg = new CommonMessage()
             {
-                mCMD = CMDS.RoomServerFrameSynchronization,
-                mMessageBuffer = MessageBufHelper.GetBytes(roomServerSynchronousInfo)
+                mCMD = CMDS.RSRCFrameSynchronization,
+                mMessageBuffer = MessageBufHelper.GetBytes(RSRCSynchronousInfo)
             };
 
             foreach (CommonClient team in mTeamers.Values)
             {
-                team.Send(newMsg);
+                team.Send(TeamMsg);
             }
 
             foreach (CommonClient enemy in mEnemys.Values)
             {
-                enemy.Send(newMsg);
+                enemy.Send(TeamMsg);
             }
         }
     }

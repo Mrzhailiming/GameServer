@@ -21,7 +21,11 @@ namespace Base.Client
         public Dictionary<IChannelHandlerContext, CommonClient> mRoomServer { get; set; }
             = new Dictionary<IChannelHandlerContext, CommonClient>();
 
-
+        /// <summary>
+        /// 客户端连接的房间服务器的阵营对应 ipport 2 camp
+        /// </summary>
+        public Dictionary<string, string> mRoomServer2Camp { get; set; }
+            = new Dictionary<string, string>();
         public RoomPlayersManager mRoomPlayersManager { get; }
 
         /// <summary>
@@ -42,5 +46,13 @@ namespace Base.Client
         /// 房间服务器的监听端口
         /// </summary>
         public static string MyClientServerPort = "9999";
+        /// <summary>
+        /// 房间服务器的监听IP
+        /// </summary>
+        public static string MyClientServerIP = "127.0.0.1";
+        /// <summary>
+        /// 我的阵营
+        /// </summary>
+        public static string MyCamp = "common";
     }
 }
