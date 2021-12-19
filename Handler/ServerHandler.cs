@@ -15,7 +15,7 @@ namespace Handler
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
         {
             // 投递
-            CmdHelper.Fire(ctx, msg);
+            CMDHelperManager.Instance().FireServer(ctx, msg);
         }
 
         public override void ChannelActive(IChannelHandlerContext ctx)

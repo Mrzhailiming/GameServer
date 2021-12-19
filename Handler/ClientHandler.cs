@@ -56,7 +56,7 @@ namespace Handler
         {
             //Console.WriteLine($"recv from server success {msg.mCMD}");
 
-            CmdHelper.Fire(ctx, msg, SocketInfo.Instance().mCenterServer);
+            CMDHelperManager.Instance().FireClient(ctx, msg);
         }
     }
 }

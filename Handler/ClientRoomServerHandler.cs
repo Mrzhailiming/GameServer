@@ -26,7 +26,7 @@ namespace Handler
         {
             Console.WriteLine($"roomserver recv from client success {msg.mCMD}");
             // 投递
-            CmdHelper.Fire(ctx, msg);
+            CMDHelperManager.Instance().FireRoomServer(ctx, msg);
         }
     }
 }

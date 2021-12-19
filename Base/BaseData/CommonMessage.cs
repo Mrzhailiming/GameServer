@@ -29,7 +29,7 @@ namespace Base.BaseData
             T obj;
 
             // 从 Parser 对象缓存
-            MessageParser parser = CmdHelper.GetMessageParser(new T());
+            MessageParser parser = CMDHelperManager.Instance().GetMessageParser(new T());
 
             // 新建
             if(null == parser)
@@ -41,7 +41,7 @@ namespace Base.BaseData
 
                 obj = Parser.ParseFrom(mMessageBuffer);
 
-                CmdHelper.AddMessageParser(type.FullName, Parser);
+                CMDHelperManager.Instance().AddMessageParser(type.FullName, Parser);
             }
             // 从缓存中取到了
             else
@@ -54,7 +54,7 @@ namespace Base.BaseData
         }
 
         /// <summary>
-        /// 大小端 屁
+        /// 序列化
         /// </summary>
         /// <returns></returns>
         public byte[] ToBytes()

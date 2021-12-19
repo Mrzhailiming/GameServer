@@ -69,7 +69,7 @@ namespace Server
         public static void InitServer()
         {
 
-            CmdHelper.Init(CMDType.Server);
+            CMDHelperManager.Instance().Init();
             ClientManager.Instance().BeginMatchTick();
 
             TickManager.Instance().RunAsync();

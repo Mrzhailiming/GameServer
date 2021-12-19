@@ -1,5 +1,6 @@
 ﻿using Base.Attributes;
 using Base.BaseData;
+using Base.Client;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using System;
@@ -10,35 +11,74 @@ using System.Reflection;
 namespace Base
 {
 
+    public class CMDHelperManager : Singletion<CMDHelperManager>
+    {
+        CmdHelper ClientCmdHelper { get; set; } = new CmdHelper();
+        CmdHelper RoomClientCmdHelper { get; set; } = new CmdHelper();
+        CmdHelper ServerCmdHelper { get; set; } = new CmdHelper();
+        CmdHelper RoomServerCmdHelper { get; set; } = new CmdHelper();
+
+        public void Init()
+        {
+            ClientCmdHelper.Init(CMDType.Client);
+            RoomClientCmdHelper.Init(CMDType.RoomClient);
+            ServerCmdHelper.Init(CMDType.Server);
+            RoomServerCmdHelper.Init(CMDType.RoomServer);
+        }
+        public void FireClient(IChannelHandlerContext ctx, CommonMessage message)
+        {
+            ClientCmdHelper.Fire(message, SocketInfo.Instance().mCenterServer);
+        }
+        public void FireRoomClient(IChannelHandlerContext ctx, CommonMessage message)
+        {
+            CommonClient roomServer;
+            SocketInfo.Instance().mRoomServer.TryGetValue(ctx, out roomServer);
+            RoomClientCmdHelper.Fire(message, roomServer);
+        }
+        public void FireServer(IChannelHandlerContext ctx, CommonMessage message)
+        {
+            CommonClient client = ClientManager.Instance().FindClient(ctx);
+            ServerCmdHelper.Fire(message, client);
+        }
+        public void FireRoomServer(IChannelHandlerContext ctx, CommonMessage message)
+        {
+            CommonClient client = RoomClientManager.Instance().FindClient(ctx);
+            RoomServerCmdHelper.Fire(message, client);
+        }
+        public void AddMessageParser(string messageTypeName, MessageParser messageParser)
+        {
+            CmdHelper.AddMessageParser(messageTypeName, messageParser);
+        }
+        public MessageParser GetMessageParser(IMessage type)
+        {
+            return CmdHelper.GetMessageParser(type);
+        }
+    }
+
     /// <summary>
     /// 
     /// </summary>
-    public class CmdHelper
+    internal class CmdHelper
     {
         /// <summary>
         /// 对应消息的解析
         /// Person -> ParseFrom 方法的映射 (根据Person 找到 反序列化根据Person的方法)
         /// </summary>
-        static private Dictionary<string, MessageParser> mMessageTypes;
+        static private Dictionary<string, MessageParser> mMessageTypes = new Dictionary<string, MessageParser>();
 
         // 与 cmd 对应的 handler
-        static private Dictionary<CMDS, Action<CommonClient, CommonMessage>> mActions;
+        private Dictionary<CMDS, Action<CommonClient, CommonMessage>> mActions;
 
-        static private CMDSDispatcher mCMDSDispatcher;
-        static public void Init(CMDType cMDType)
+        private CMDSDispatcher mCMDSDispatcher;
+        public void Init(CMDType cMDType)
         {
-            mMessageTypes = new Dictionary<string, MessageParser>();
             mActions = new Dictionary<CMDS, Action<CommonClient, CommonMessage>>();
             mCMDSDispatcher = new CMDSDispatcher();
 
-            //InitMessageTypesParser();
-
             InitMessageHandler(cMDType);
-
-            
         }
 
-        private static void InitMessageHandler(CMDType cMDType)
+        private void InitMessageHandler(CMDType cMDType)
         {
             string exePath = Directory.GetCurrentDirectory();
 
@@ -48,17 +88,24 @@ namespace Base
 
             foreach (Type type in types)
             {
+                var arr = type.GetCustomAttribute<CMDTypeAttribute>();
+
+                if (null == arr || arr.CMDType != cMDType)
+                {
+                    continue;
+                }
+
                 MethodInfo[] methodInfos = type.GetMethods();
 
                 foreach (MethodInfo method in methodInfos)
                 {
                     var arrr = method.GetCustomAttribute<CmdHandlerAttribute>();
 
-                    if (null == arrr || 
-                        (arrr.CMDType != cMDType && arrr.CMDType != CMDType.ServerAndClient))
+                    if (null == arrr)
                     {
                         continue;
                     }
+
                     var handler = Delegate.CreateDelegate(typeof(Action<CommonClient, CommonMessage>), method) as Action<CommonClient, CommonMessage>;
                     if (!mActions.TryAdd(arrr.CmdID, handler))
                     {
@@ -75,63 +122,16 @@ namespace Base
         }
 
         /// <summary>
-        /// 查找所有继承 IMessage 的类, 生成对应的 Parser
-        /// </summary>
-        //private static void InitMessageTypesParser()
-        //{
-        //    string exePath = Directory.GetCurrentDirectory();
-        //    string path = $"exePath\\..\\..\\..\\..\\Gen\\bin\\Debug\\netcoreapp3.1\\Gen.dll";
-        //    path = $"D:\\Code\\CommonServer\\CommonServer\\Gen\\bin\\Debug\\netcoreapp3.1\\Gen.dll";
-        //    Assembly assembly = Assembly.LoadFile(path);
-        //    var types = assembly.GetTypes();
-
-        //    foreach (Type type in types)
-        //    {
-
-        //        if (null != type.GetInterface($"IMessage"))
-        //        {
-        //            AddMessageParser(type);
-        //        }
-        //    }
-
-        //    foreach (var type in mMessageTypes)
-        //    {
-        //        Console.WriteLine($"找到IMessage:{type}");
-        //    }
-        //    Console.WriteLine($"共找到IMessage:{mMessageTypes.Count}个");
-        //}
-
-        /// <summary>
         /// 投递消息
         /// </summary>
-        public static void Fire(IChannelHandlerContext ctx, CommonMessage message, CommonClient toWho = null)
+        public void Fire(CommonMessage message, CommonClient toWho)
         {
             Action<CommonClient, CommonMessage> action = null;
-
-            CommonClient client;
-
-            if (null == toWho)
-            {
-                client = ClientManager.Instance().FindClient(ctx);
-
-                if (null == client)
-                {
-                    // 不保证消息处理函数拿到的client都不为null
-                    //return;
-                    client = RoomClientManager.Instance().FindClient(ctx);
-                }
-            }
-            else
-            {
-                client = toWho;
-            }
-
-            
 
             if (mActions.TryGetValue(message.mCMD, out action))
             {
                 //Console.WriteLine($"cmd:{message.mCMD} find");
-                mCMDSDispatcher.Dispatch(action, client, message);
+                mCMDSDispatcher.Dispatch(action, toWho, message);
             }
             else
             {
@@ -167,40 +167,5 @@ namespace Base
                 Console.WriteLine($"AddMessageParser type:{messageTypeName} faild");
             }
         }
-
-        /// <summary>
-        /// 目的: 找到自定义 Message 对应的 Parser 从而进行反序列化
-        /// 先建立缓存 map 饿汉模式
-        /// </summary>
-        /// <param name="type"></param>
-        //private static void AddMessageParser(Type type)
-        //{
-        //    // 获取 Person 的成员 parser 的 ParseFrom 方法
-        //    BindingFlags flag = BindingFlags.Static | BindingFlags.NonPublic;
-        //    FieldInfo f_key = type.GetField("_parser", flag);
-
-        //    byte[] tmp = new byte[1];
-        //    Type paramType = tmp.GetType();
-        //    Type[] methodParamType = new Type[] { paramType };
-        //    MethodInfo[] methodInfos = f_key.FieldType.GetMethods();
-        //    MethodInfo methodInfo = f_key.FieldType.GetMethod("ParseFrom", methodParamType);
-
-
-        //    MessageParser messageParser = (MessageParser)type.GetField("_parser", flag).GetValue(null);
-
-
-        //    object obj = type.Assembly.CreateInstance(type.FullName);
-        //    var message = (IMessage)obj;
-
-        //    // Person -> ParseFrom 方法的映射 (根据Person 找到 反序列化根据Person的方法)
-        //    if (mMessageTypes.TryAdd(type.FullName, messageParser))
-        //    {
-        //        Console.WriteLine($"success type:{type} 生成对应的 Parser:{f_key}");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine($"faild type:{type} 生成对应的 Parser:{f_key}");
-        //    }
-        //}
     }
 }

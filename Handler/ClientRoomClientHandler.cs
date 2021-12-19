@@ -44,11 +44,11 @@ namespace Handler
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
             // 设置自己连接的房间服务器
-            SocketInfo.Instance().mRoomServer = new CommonClient()
+            SocketInfo.Instance().mRoomServer.Add(ctx, new CommonClient()
             {
                 ctx = ctx,
                 Name = "roomserver"
-            };
+            });
             // 登录 加入其他房间服务器
             LogIn(ctx);
         }
@@ -57,7 +57,7 @@ namespace Handler
         {
             Console.WriteLine($"recv from clientRoomServer success {msg.mCMD}");
             // 投递
-            CmdHelper.Fire(ctx, msg, SocketInfo.Instance().mRoomServer);
+            CMDHelperManager.Instance().FireRoomClient(ctx, msg);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Base.BaseData;
+using DotNetty.Transport.Channels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,7 +18,8 @@ namespace Base.Client
         /// <summary>
         /// 客户端连接的roomserver, 妈的会连接 9 个, 这弄一个也没有用啊
         /// </summary>
-        public CommonClient mRoomServer { get; set; }
+        public Dictionary<IChannelHandlerContext, CommonClient> mRoomServer { get; set; }
+            = new Dictionary<IChannelHandlerContext, CommonClient>();
 
 
         public RoomPlayersManager mRoomPlayersManager { get; }
@@ -30,16 +32,6 @@ namespace Base.Client
         public void SendToCenterServer(CommonMessage message)
         {
             mCenterServer.Send(message);
-        }
-
-        /// <summary>
-        /// 客户端给房间服务器发消息用这个?
-        /// 客户端要连接9个roomserver
-        /// </summary>
-        /// <param name="message"></param>
-        public void SendToRoomServer(CommonMessage message)
-        {
-            mRoomServer.Send(message);
         }
     }
 

@@ -20,8 +20,9 @@ namespace Base
     }
     public enum CMDType : long
     {
-        Server = 1,
-        Client = 2,
-        ServerAndClient = 3,
+        Server,
+        Client,
+        RoomServer,
+        RoomClient,
     }
 }

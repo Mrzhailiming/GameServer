@@ -18,7 +18,7 @@ namespace Base.Client
         /// <summary>
         /// 连接房间服务器的 channel 多个
         /// </summary>
-        public Dictionary<int, MyChannel> ChannelToRoomServers { get; set; }
+        public Dictionary<int, MyChannel> ChannelToRoomServers { get; set; } = new Dictionary<int, MyChannel>();
     }
 
     public class MyChannel

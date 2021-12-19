@@ -1,27 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-namespace Client
+﻿namespace Client
 {
     using System;
-    using System.IO;
     using System.Net;
-    using System.Net.Security;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Base;
-    using Base.BaseData;
     using Base.Client;
-    using Base.DataHelper;
     using Base.Tick;
-    using CommonProtocol;
-    using ConnmonMessage;
-    using DotNetty.Handlers.Logging;
-    using DotNetty.Handlers.Tls;
-    using DotNetty.Transport.Bootstrapping;
-    using DotNetty.Transport.Channels;
-    using DotNetty.Transport.Channels.Sockets;
-    using Handler;
 
     class Program
     {
@@ -39,16 +23,14 @@ namespace Client
             bool b = task.IsCompleted;
             // 客户端的房间服务器 监听 随机吧
             IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), Convert.ToInt32(ClientInfo.MyClientServerPort));
-             ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
-
-            
+            ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
         }
 
         public static void InitClientServer()
         {
-            TickManager.Instance().RunAsync(); 
+            TickManager.Instance().RunAsync();
 
-            CmdHelper.Init(CMDType.Client);
+            CMDHelperManager.Instance().Init();
         }
     }
 }
