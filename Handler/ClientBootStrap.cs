@@ -1,4 +1,5 @@
-﻿using CommonProtocol;
+﻿using Base.Client;
+using CommonProtocol;
 using DotNetty.Codecs;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
@@ -37,14 +38,19 @@ namespace Base
 
                 IChannel bootstrapChannel = await bootstrap.ConnectAsync(iPEndPoint);
 
+                ChannelManager.Instance().ChannelToCenterServer = new MyChannel()
+                {
+                    Channel = bootstrapChannel,
+                    Groups = new List<MultithreadEventLoopGroup>() { group }
+                };
 
-                Console.ReadLine();
+                //Console.ReadLine();
 
-                await bootstrapChannel.CloseAsync();
+                //await bootstrapChannel.CloseAsync();
             }
             finally
             {
-                group.ShutdownGracefullyAsync().Wait(1000);
+                //group.ShutdownGracefullyAsync().Wait(1000);
             }
         }
 
@@ -81,17 +87,24 @@ namespace Base
 
                 IChannel bootstrapChannel = await bootstrap.BindAsync(EndPoint);
 
-                Console.WriteLine("key to quit");
-                Console.ReadKey();
+                ChannelManager.Instance().ChannelRoomServer = new MyChannel()
+                {
+                    Channel = bootstrapChannel,
+                    Groups = new List<MultithreadEventLoopGroup>() { bossGroup, workerGroup }
+                };
 
-                await bootstrapChannel.CloseAsync();
+                //Console.WriteLine("key to quit");
+                //Console.ReadKey();
+
+                //await bootstrapChannel.CloseAsync();
             }
             finally
             {
-                Task.WaitAll(bossGroup.ShutdownGracefullyAsync(), workerGroup.ShutdownGracefullyAsync());
+                //Task.WaitAll(bossGroup.ShutdownGracefullyAsync(), workerGroup.ShutdownGracefullyAsync());
             }
         }
 
+        static int RoomServerCount = 0;
         /// <summary>
         /// 客户端连接其他房间服务器
         /// </summary>
@@ -120,14 +133,19 @@ namespace Base
 
                 IChannel bootstrapChannel = await bootstrap.ConnectAsync(EndPoint);
 
+                ChannelManager.Instance().ChannelToRoomServers.Add(RoomServerCount++, new MyChannel()
+                {
+                    Channel = bootstrapChannel,
+                    Groups = new List<MultithreadEventLoopGroup>() { group }
+                });
 
-                Console.ReadLine();
+                //Console.ReadLine();
 
-                await bootstrapChannel.CloseAsync();
+                //await bootstrapChannel.CloseAsync();
             }
             finally
             {
-                group.ShutdownGracefullyAsync().Wait(1000);
+                //group.ShutdownGracefullyAsync().Wait(1000);
             }
         }
     }

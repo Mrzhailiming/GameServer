@@ -37,6 +37,10 @@ message SCLogIn{
 	int32 result = 2;
 }
 
+message CSMatch{
+	int32 roleID = 1;
+}
+
 message RoomServerSynchronousInfo{
 	string name = 1;
 	string operationInfo = 2; // 玩家的操作

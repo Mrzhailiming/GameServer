@@ -31,9 +31,10 @@ namespace ConnmonMessage {
             "U2VydmVySmlvblJvb21Sc3ASDgoGUmVzdWx0GAEgASgFIh8KClNDSm9pblJv",
             "b20SEQoJYWxsQ2xpZW50GAEgASgJIjcKB0NTTG9nSW4SFAoMUm9vbVNlcnZl",
             "cklQGAEgASgJEhYKDlJvb21TZXJ2ZXJQb3J0GAIgASgFIikKB1NDTG9nSW4S",
-            "DgoGcm9sZUlEGAEgASgFEg4KBnJlc3VsdBgCIAEoBSJAChlSb29tU2VydmVy",
-            "U3luY2hyb25vdXNJbmZvEgwKBG5hbWUYASABKAkSFQoNb3BlcmF0aW9uSW5m",
-            "bxgCIAEoCUIRqgIOQ29ubm1vbk1lc3NhZ2ViBnByb3RvMw=="));
+            "DgoGcm9sZUlEGAEgASgFEg4KBnJlc3VsdBgCIAEoBSIZCgdDU01hdGNoEg4K",
+            "BnJvbGVJRBgBIAEoBSJAChlSb29tU2VydmVyU3luY2hyb25vdXNJbmZvEgwK",
+            "BG5hbWUYASABKAkSFQoNb3BlcmF0aW9uSW5mbxgCIAEoCUIRqgIOQ29ubm1v",
+            "bk1lc3NhZ2ViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -44,6 +45,7 @@ namespace ConnmonMessage {
             new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.SCJoinRoom), global::ConnmonMessage.SCJoinRoom.Parser, new[]{ "AllClient" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.CSLogIn), global::ConnmonMessage.CSLogIn.Parser, new[]{ "RoomServerIP", "RoomServerPort" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.SCLogIn), global::ConnmonMessage.SCLogIn.Parser, new[]{ "RoleID", "Result" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.CSMatch), global::ConnmonMessage.CSMatch.Parser, new[]{ "RoleID" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ConnmonMessage.RoomServerSynchronousInfo), global::ConnmonMessage.RoomServerSynchronousInfo.Parser, new[]{ "Name", "OperationInfo" }, null, null, null, null)
           }));
     }
@@ -1614,6 +1616,195 @@ namespace ConnmonMessage {
 
   }
 
+  public sealed partial class CSMatch : pb::IMessage<CSMatch>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<CSMatch> _parser = new pb::MessageParser<CSMatch>(() => new CSMatch());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<CSMatch> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::ConnmonMessage.TestReflection.Descriptor.MessageTypes[7]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public CSMatch() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public CSMatch(CSMatch other) : this() {
+      roleID_ = other.roleID_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public CSMatch Clone() {
+      return new CSMatch(this);
+    }
+
+    /// <summary>Field number for the "roleID" field.</summary>
+    public const int RoleIDFieldNumber = 1;
+    private int roleID_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int RoleID {
+      get { return roleID_; }
+      set {
+        roleID_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as CSMatch);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(CSMatch other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (RoleID != other.RoleID) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (RoleID != 0) hash ^= RoleID.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (RoleID != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(RoleID);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (RoleID != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(RoleID);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (RoleID != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(RoleID);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(CSMatch other) {
+      if (other == null) {
+        return;
+      }
+      if (other.RoleID != 0) {
+        RoleID = other.RoleID;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            RoleID = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            RoleID = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
   public sealed partial class RoomServerSynchronousInfo : pb::IMessage<RoomServerSynchronousInfo>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -1628,7 +1819,7 @@ namespace ConnmonMessage {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::ConnmonMessage.TestReflection.Descriptor.MessageTypes[7]; }
+      get { return global::ConnmonMessage.TestReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

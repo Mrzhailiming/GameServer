@@ -35,11 +35,11 @@ namespace Client
 
             // 服务器 端口 8888  连接中心服务器
             IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8888);
-            ClientBootStrap.Instance().RunClientAsync(iPEndPoint);
-
-            // 客户端的房间服务器 监听 9999
+            Task task = ClientBootStrap.Instance().RunClientAsync(iPEndPoint);
+            bool b = task.IsCompleted;
+            // 客户端的房间服务器 监听 随机吧
             IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), Convert.ToInt32(ClientInfo.MyClientServerPort));
-            ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
+             ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
 
             
         }
@@ -49,12 +49,6 @@ namespace Client
             TickManager.Instance().RunAsync(); 
 
             CmdHelper.Init(CMDType.Client);
-
-            //RunAsync();
         }
-
-        
     }
-
-    
 }

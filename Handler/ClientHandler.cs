@@ -48,6 +48,8 @@ namespace Handler
                 ctx = ctx,
                 Name = "centerserver",
             };
+
+            
         }
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
