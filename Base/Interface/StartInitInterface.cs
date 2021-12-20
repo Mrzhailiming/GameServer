@@ -10,9 +10,14 @@ namespace Base.Interface
     public interface StartInitInterface
     {
         /// <summary>
-        /// 自定义参数
+        /// 要执行 init 的实例
+        /// </summary>
+        public object Instance { get;}
+
+        /// <summary>
+        /// 自定义参数 (参数咋传啊)
         /// </summary>
         /// <param name="param"></param>
-        void Init(params string[] param);
+        void Init(/*params string[] param*/);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Base.Interface;
+﻿using Base;
+using Base.Interface;
 using System;
 
 namespace Test
@@ -23,11 +24,33 @@ namespace Test
     }
 
 
-    public class testInitInterface : StartInitInterface
+    public class testInitInterface1 : Singletion<testInitInterface1>, StartInitInterface
     {
-        public void Init(params string[] param)
+        object StartInitInterface.Instance { get => testInitInterface1.Instance(); }
+
+        public void Init(/*params string[] param*/)
         {
-            Console.WriteLine("testInitInterface success");
+            Console.WriteLine("testInitInterface1 success");
+        }
+    }
+
+    public class testInitInterface2 : Singletion<testInitInterface2>, StartInitInterface
+    {
+        object StartInitInterface.Instance { get => testInitInterface2.Instance(); }
+
+        public void Init(/*params string[] param*/)
+        {
+            Console.WriteLine("testInitInterface2 success");
+        }
+    }
+
+    public class testInitInterface3 : Singletion<testInitInterface3>, StartInitInterface
+    {
+        object StartInitInterface.Instance { get => testInitInterface3.Instance(); }
+
+        public void Init(/*params string[] param*/)
+        {
+            Console.WriteLine("testInitInterface3 success");
         }
     }
 }
