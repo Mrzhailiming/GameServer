@@ -36,14 +36,19 @@ namespace Base
 
         private CMDTask() { }
     }
+
     /// <summary>
-    /// 处理协议, 在这做异步吧
+    /// 处理协议
     /// </summary>
     public class CMDSDispatcher
     {
         static ConcurrentQueue<CMDTask> mTaskQueue = new ConcurrentQueue<CMDTask>();
 
-        static Semaphore sema = new Semaphore(0, int.MaxValue);
+        // 这种方式同步, 不太好吧 好像也没啥问题 这个是有计数的问题的 每次release都会+1, 本逻辑不太需要计数
+        //static Semaphore sema = new Semaphore(0, int.MaxValue); 
+
+        // 用这种方式同步 (有任务的时候, 唤醒处理线程即可)
+        static ManualResetEvent ResetEvent = new ManualResetEvent(false);
 
         public CMDSDispatcher()
         {
@@ -58,7 +63,8 @@ namespace Base
         public void Dispatch(Action<CommonClient, CommonMessage> action, CommonClient client, CommonMessage message)
         {
             mTaskQueue.Enqueue(new CMDTask(action, client, message));
-            sema.Release();
+            //sema.Release();
+            ResetEvent.Set(); // 唤醒 (发信号)
         }
 
 
@@ -68,10 +74,9 @@ namespace Base
             AutoResetEvent autoEvent = new AutoResetEvent(false);
 
             //获取处于活动状态的线程池请求的数目
-            ThreadPool.GetMaxThreads(out workerThreads, out portThreads);
-
+            //ThreadPool.GetMaxThreads(out workerThreads, out portThreads);
             //在控制台中显示处于活动状态的线程池请求的数目
-            Console.WriteLine("设置前，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
+            //Console.WriteLine("设置前，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
 
             workerThreads = 10;//设置辅助线程的最大数
 
@@ -96,7 +101,7 @@ namespace Base
                 {
                     CMDTask task = null;
 
-                    sema.WaitOne();
+                    //sema.WaitOne();
                     do
                     {
                         if (mTaskQueue.TryDequeue(out task))
@@ -104,7 +109,8 @@ namespace Base
                             ThreadPool.QueueUserWorkItem(Do, task);// 投递
                         }
                     } while (mTaskQueue.TryDequeue(out task));
-                    
+
+
                 }
                 catch (Exception ex)
                 {
@@ -113,7 +119,8 @@ namespace Base
                 }
                 finally
                 {
-                    
+                    ResetEvent.Reset(); // 重置 信号
+                    ResetEvent.WaitOne(10); // 阻塞当前线程, 直到收到信号
                 }
                 
             }

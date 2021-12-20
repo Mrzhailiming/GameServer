@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Base;
     using Base.Client;
+    using Base.Interface;
     using Base.Tick;
 
     class Program
@@ -28,9 +29,11 @@
 
         public static void InitClientServer()
         {
-            TickManager.Instance().RunAsync();
+            // 新方式, 自动调用, 只需要继承 StartInitInterface 接口即可
+            StartInitManager.Instance().StartInit(InitType.Client);
 
-            CMDHelperManager.Instance().Init();
+            //TickManager.Instance().RunAsync();
+            //CMDHelperManager.Instance().Init();
         }
     }
 }

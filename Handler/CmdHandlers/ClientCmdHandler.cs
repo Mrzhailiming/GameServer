@@ -3,6 +3,7 @@ using Base.Attributes;
 using Base.BaseData;
 using Base.Client;
 using Base.DataHelper;
+using Base.Logger;
 using Base.Tick;
 using ConnmonMessage;
 using Google.Protobuf;
@@ -37,16 +38,28 @@ namespace Handler.CmdHandlers
 
             List<IPPort> toConnect = IPParserHelper.StringIPPortCamp(jionRoom.AllClient);
 
-            foreach(IPPort iPPort in toConnect)
+            // 1.先确定我的阵营
+            foreach (IPPort iPPort in toConnect)
             {
                 // 不要连接自己的 房间服务器
                 if(iPPort.Port == ClientInfo.MyClientServerPort
                     && iPPort.IP == ClientInfo.MyClientServerIP)
                 {
-                    ClientInfo.MyCamp = iPPort.Camp; // 记录我的阵营
+                    ClientInfo.MyCamp = iPPort.Camp; 
+                    break;
+                }
+            }
+
+            // 2.再连接 (不然自己的阵营还没确定, 然后已经连接好房间服务器准备加入房间了,但是阵营还没初始化)
+            foreach (IPPort iPPort in toConnect)
+            {
+                // 不要连接自己的 房间服务器
+                if (iPPort.Port == ClientInfo.MyClientServerPort
+                    && iPPort.IP == ClientInfo.MyClientServerIP)
+                {
                     continue;
                 }
-                IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse(iPPort.IP),Convert.ToInt32(iPPort.Port));
+                IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse(iPPort.IP), Convert.ToInt32(iPPort.Port));
 
                 ClientBootStrap.Instance().RunClientRoomClientAsync(EndPoint);
             }
@@ -106,7 +119,7 @@ namespace Handler.CmdHandlers
             };
 
             SocketInfo.Instance().mCenterServer.Send(message);
-            Console.WriteLine($"client send heartbeat");
+            LoggerHelper.Instance().Log(LogType.Console, $"client send heartbeat");
             return true;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Base.Interface;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace Base.Tick
     /// 那 CommonClient.Update 的时间间隔设置多久呢? 设置为 0 还是 几毫秒
     /// 不设置吧, Update 里有需要tick的 tickinfo, 设置时间间隔的话, 肯定不能按时tick到
     /// </summary>
-    public class TickManager : Singletion<TickManager>
+    public class TickManager : Singletion<TickManager>, StartInitInterface
     {
         /// <summary>
         /// 维护所有要tick的 TickInfo
@@ -22,11 +23,16 @@ namespace Base.Tick
         /// </summary>
         private LinkedList<TickInfo> mTickInfos = new LinkedList<TickInfo>();
 
+        object StartInitInterface.Instance => Instance();
+
+        private InitType mInitType = InitType.Both;
+        public InitType InitType { get => mInitType; }
+
         /// <summary>
         /// 异步 挺好使
         /// 异步调用的函数是个死循环
         /// </summary>
-        public async void RunAsync()
+        private async void RunAsync()
         {
             await Task.Run(Execute);
         }
@@ -80,6 +86,11 @@ namespace Base.Tick
                         $"{ex}");
                 }
             }
+        }
+
+        public void Init()
+        {
+            RunAsync();
         }
     }
 }

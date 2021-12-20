@@ -3,6 +3,7 @@ using Base.Attributes;
 using Base.BaseData;
 using Base.Client;
 using Base.DataHelper;
+using Base.Logger;
 using ConnmonMessage;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Handler.CmdHandlers
         public static void ProcessRSRCFrameSynchronization(CommonClient client, CommonMessage message)
         {
             RSRCSynchronousInfo roomServerSynchronousInfo = message.GetObject<RSRCSynchronousInfo>();
-            Console.WriteLine($"RoomClient recv roomserver  FrameSynchronization camp:{roomServerSynchronousInfo.Camp}info:{roomServerSynchronousInfo.OperationInfo}");
+            LoggerHelper.Instance().Log(LogType.Console, $"RoomClient recv roomserver  FrameSynchronization camp:{roomServerSynchronousInfo.Camp}info:{roomServerSynchronousInfo.OperationInfo}");
         }
 
         /// <summary>

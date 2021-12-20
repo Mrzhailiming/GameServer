@@ -1,12 +1,11 @@
 ﻿using Base.BaseData;
 using Base.DataHelper;
+using Base.Interface;
 using Base.Tick;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
-using Google.Protobuf;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text;
 
 namespace Base
@@ -15,7 +14,7 @@ namespace Base
     /// server用
     /// 管理所有玩家
     /// </summary>
-    public class ClientManager : Singletion<ClientManager>
+    public class ClientManager : Singletion<ClientManager>, StartInitInterface
     {
         /// <summary>
         /// 未执行login的玩家
@@ -42,7 +41,7 @@ namespace Base
             new LinkedList<CommonClient>();
 
         private TickInfos mServerTickInfos;
-        public void BeginTick()
+        private void BeginTick()
         {
             mServerTickInfos = new TickInfos(this);
             // 增加匹配的tick
@@ -104,6 +103,7 @@ namespace Base
 
         public const int PerMatchNum = 4;
 
+
         public void AddMatchClient(CommonClient client)
         {
             mOnMatchClients.AddLast(client);
@@ -124,9 +124,9 @@ namespace Base
         bool HeartBeat(long ticks)
         {
             long nowTick = DateTime.Now.Ticks; // 100ns
-            foreach(var client in mOnLineClientDic.Values)
+            foreach (var client in mOnLineClientDic.Values)
             {
-                if(!client.IsOffLine // 不是离线状态
+                if (!client.IsOffLine // 不是离线状态
                     && client.PrevHeartBeatTick != 0 // 客户端同步过一次 tick (如果客户端一次都没同步过, 那不就啦垮了)
                     && nowTick - client.PrevHeartBeatTick > 2 * 1000 * 1000 * 10) // 2s 没有心跳才设置离线
                 {
@@ -149,14 +149,14 @@ namespace Base
                 List<CommonClient> RedTeam = new List<CommonClient>();
                 List<CommonClient> BlueTeam = new List<CommonClient>();
 
-                for(int count = 0; count < PerMatchNum; ++count)
+                for (int count = 0; count < PerMatchNum; ++count)
                 {
-                    if(null == node)
+                    if (null == node)
                     {
                         break;
                     }
 
-                    if(count % 2 == 0)
+                    if (count % 2 == 0)
                     {
                         RedTeam.Add(node.Value);
                     }
@@ -173,7 +173,7 @@ namespace Base
 
                 StringBuilder stringBuilder = new StringBuilder();
 
-                foreach(CommonClient client in RedTeam)
+                foreach (CommonClient client in RedTeam)
                 {
                     stringBuilder.Append(client.RoomServerIP).Append("&");
                     stringBuilder.Append(client.RoomServerPort).Append("&");
@@ -208,6 +208,16 @@ namespace Base
             }
 
             return true;
+        }
+
+        object StartInitInterface.Instance => Instance();
+
+        private InitType mInitType = InitType.Server;
+        public InitType InitType { get => mInitType; }
+
+        public void Init()
+        {
+            BeginTick();
         }
     }
 }

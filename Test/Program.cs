@@ -1,4 +1,5 @@
-﻿using Base.Logger;
+﻿using Base;
+using Base.Interface;
 using System;
 
 namespace Test
@@ -20,6 +21,39 @@ namespace Test
             LoggerHelper.Instance().Log(LogType.Console, "22222222222");
 
             Console.WriteLine("Hello World!");
+
+            StartInitManager.Instance().StartInit(InitType.Server);
         }
     }
+
+
+    //public class testInitInterface1 : Singletion<testInitInterface1>, StartInitInterface
+    //{
+    //    object StartInitInterface.Instance { get => testInitInterface1.Instance(); }
+
+    //    public void Init(/*params string[] param*/)
+    //    {
+    //        Console.WriteLine("testInitInterface1 success");
+    //    }
+    //}
+
+    //public class testInitInterface2 : Singletion<testInitInterface2>, StartInitInterface
+    //{
+    //    object StartInitInterface.Instance { get => testInitInterface2.Instance(); }
+
+    //    public void Init(/*params string[] param*/)
+    //    {
+    //        Console.WriteLine("testInitInterface2 success");
+    //    }
+    //}
+
+    //public class testInitInterface3 : Singletion<testInitInterface3>, StartInitInterface
+    //{
+    //    object StartInitInterface.Instance { get => testInitInterface3.Instance(); }
+
+    //    public void Init(/*params string[] param*/)
+    //    {
+    //        Console.WriteLine("testInitInterface3 success");
+    //    }
+    //}
 }

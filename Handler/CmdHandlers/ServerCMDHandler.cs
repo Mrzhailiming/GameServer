@@ -2,6 +2,7 @@
 using Base.Attributes;
 using Base.BaseData;
 using Base.DataHelper;
+using Base.Logger;
 using ConnmonMessage;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Handler.CmdHandlers
 
             client.PrevHeartBeatTick = heartBeat.Tick;
 
-            Console.WriteLine($"server recv heartbeat");
+            LoggerHelper.Instance().Log(LogType.HeartBeat, $"server recv heartbeat");
         }
         /// <summary>
         /// 服务器

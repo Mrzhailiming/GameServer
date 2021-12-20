@@ -1,6 +1,7 @@
 ﻿using Base.Attributes;
 using Base.BaseData;
 using Base.Client;
+using Base.Interface;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using System;
@@ -11,12 +12,17 @@ using System.Reflection;
 namespace Base
 {
 
-    public class CMDHelperManager : Singletion<CMDHelperManager>
+    public class CMDHelperManager : Singletion<CMDHelperManager>, StartInitInterface
     {
         CmdHelper ClientCmdHelper { get; } = new CmdHelper();
         CmdHelper RoomClientCmdHelper { get; } = new CmdHelper();
         CmdHelper ServerCmdHelper { get; } = new CmdHelper();
         CmdHelper RoomServerCmdHelper { get; } = new CmdHelper();
+
+        object StartInitInterface.Instance => Instance();
+
+        private InitType mInitType = InitType.Both;
+        public InitType InitType { get => mInitType; }
 
         private CMDSDispatcher mCMDSDispatcher;
 
