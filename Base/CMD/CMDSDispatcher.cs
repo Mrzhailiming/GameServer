@@ -47,7 +47,7 @@ namespace Base
         // 这种方式同步, 不太好吧 好像也没啥问题 这个是有计数的问题的 每次release都会+1, 本逻辑不太需要计数
         //static Semaphore sema = new Semaphore(0, int.MaxValue); 
 
-        // 用这种方式同步
+        // 用这种方式同步 (有任务的时候, 唤醒处理线程即可)
         static ManualResetEvent ResetEvent = new ManualResetEvent(false);
 
         public CMDSDispatcher()
@@ -64,7 +64,7 @@ namespace Base
         {
             mTaskQueue.Enqueue(new CMDTask(action, client, message));
             //sema.Release();
-            ResetEvent.Set(); // 唤醒
+            ResetEvent.Set(); // 唤醒 (发信号)
         }
 
 
@@ -119,8 +119,8 @@ namespace Base
                 }
                 finally
                 {
-                    ResetEvent.Reset(); // 重置
-                    ResetEvent.WaitOne(10); // 阻塞, 等待唤醒
+                    ResetEvent.Reset(); // 重置 信号
+                    ResetEvent.WaitOne(10); // 阻塞当前线程, 直到收到信号
                 }
                 
             }

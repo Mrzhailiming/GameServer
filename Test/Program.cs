@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Base.Interface;
+using System;
 
 namespace Test
 {
@@ -16,6 +17,17 @@ namespace Test
             string[] ipt = ipPor.Split('&');
 
             Console.WriteLine("Hello World!");
+
+            StartInitManager.Instance().ToString();
+        }
+    }
+
+
+    public class testInitInterface : StartInitInterface
+    {
+        public void Init(params string[] param)
+        {
+            Console.WriteLine("testInitInterface success");
         }
     }
 }
