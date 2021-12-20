@@ -13,10 +13,10 @@ namespace Base
 
     public class CMDHelperManager : Singletion<CMDHelperManager>
     {
-        CmdHelper ClientCmdHelper { get; set; } = new CmdHelper();
-        CmdHelper RoomClientCmdHelper { get; set; } = new CmdHelper();
-        CmdHelper ServerCmdHelper { get; set; } = new CmdHelper();
-        CmdHelper RoomServerCmdHelper { get; set; } = new CmdHelper();
+        CmdHelper ClientCmdHelper { get; } = new CmdHelper();
+        CmdHelper RoomClientCmdHelper { get; } = new CmdHelper();
+        CmdHelper ServerCmdHelper { get; } = new CmdHelper();
+        CmdHelper RoomServerCmdHelper { get; } = new CmdHelper();
 
         private CMDSDispatcher mCMDSDispatcher;
 

@@ -20,6 +20,7 @@ namespace Handler
 
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
+            Console.WriteLine($"server recv a connect");
             ClientManager.Instance().AddCient(ctx);
         }
 
