@@ -19,38 +19,38 @@ namespace Test
 
             Console.WriteLine("Hello World!");
 
-            StartInitManager.Instance().ToString();
+            StartInitManager.Instance().StartInit(InitType.Server);
         }
     }
 
 
-    public class testInitInterface1 : Singletion<testInitInterface1>, StartInitInterface
-    {
-        object StartInitInterface.Instance { get => testInitInterface1.Instance(); }
+    //public class testInitInterface1 : Singletion<testInitInterface1>, StartInitInterface
+    //{
+    //    object StartInitInterface.Instance { get => testInitInterface1.Instance(); }
 
-        public void Init(/*params string[] param*/)
-        {
-            Console.WriteLine("testInitInterface1 success");
-        }
-    }
+    //    public void Init(/*params string[] param*/)
+    //    {
+    //        Console.WriteLine("testInitInterface1 success");
+    //    }
+    //}
 
-    public class testInitInterface2 : Singletion<testInitInterface2>, StartInitInterface
-    {
-        object StartInitInterface.Instance { get => testInitInterface2.Instance(); }
+    //public class testInitInterface2 : Singletion<testInitInterface2>, StartInitInterface
+    //{
+    //    object StartInitInterface.Instance { get => testInitInterface2.Instance(); }
 
-        public void Init(/*params string[] param*/)
-        {
-            Console.WriteLine("testInitInterface2 success");
-        }
-    }
+    //    public void Init(/*params string[] param*/)
+    //    {
+    //        Console.WriteLine("testInitInterface2 success");
+    //    }
+    //}
 
-    public class testInitInterface3 : Singletion<testInitInterface3>, StartInitInterface
-    {
-        object StartInitInterface.Instance { get => testInitInterface3.Instance(); }
+    //public class testInitInterface3 : Singletion<testInitInterface3>, StartInitInterface
+    //{
+    //    object StartInitInterface.Instance { get => testInitInterface3.Instance(); }
 
-        public void Init(/*params string[] param*/)
-        {
-            Console.WriteLine("testInitInterface3 success");
-        }
-    }
+    //    public void Init(/*params string[] param*/)
+    //    {
+    //        Console.WriteLine("testInitInterface3 success");
+    //    }
+    //}
 }

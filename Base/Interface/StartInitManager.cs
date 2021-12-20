@@ -12,12 +12,23 @@ namespace Base.Interface
 
         List<StartInitInterface> mStartInitInterface = new List<StartInitInterface>();
 
-        public StartInitManager()
+        /// <summary>
+        /// 客户端和服务器所要调用的init函数的类可能不一样, 也有重合的类
+        /// </summary>
+        InitType mInitType;
+
+        /// <summary>
+        /// 服务器客户端都在用, 要不要区分一下...
+        /// </summary>
+        public void StartInit(InitType initType)
         {
+            mInitType = initType;
+
             Init();
 
             RunAllInit();
         }
+
 
         private void RunAllInit()
         {
@@ -134,6 +145,7 @@ namespace Base.Interface
             }
 
             StartInitInterface Instance = null;
+            InitType initType = InitType.Both;
             foreach (PropertyInfo property in Propertys)
             {
                 // 找到
@@ -142,7 +154,14 @@ namespace Base.Interface
                     // 获取属性值
                     var ret = property.GetValue(Activator.CreateInstance(type), null);
                     Instance = (StartInitInterface)ret;
-                    break;
+                    continue;
+                }
+
+                if (property.Name.Contains("InitType"))
+                {
+                    var ret = property.GetValue(Activator.CreateInstance(type), null);
+                    initType = (InitType)ret;
+                    continue;
                 }
             }
 
@@ -150,6 +169,13 @@ namespace Base.Interface
             if (null == Instance)
             {
                 Console.WriteLine($"ProcessType {type} has no static Instance");
+                return;
+            }
+
+            // 既不是 Both 也不是 mInitType
+            if (InitType.Both != initType
+                && initType != mInitType)
+            {
                 return;
             }
 
