@@ -1,6 +1,7 @@
 ﻿using Base;
 using Base.Interface;
 using Base.Logger;
+using Base.StateMachine;
 using System;
 
 namespace Test
@@ -24,6 +25,25 @@ namespace Test
             Console.WriteLine("Hello World!");
 
             StartInitManager.Instance().StartInit(InitType.Server);
+
+            TestStateMachine testStateMachine = new TestStateMachine();
+        }
+    }
+
+    public class TestStateMachine
+    {
+        StateMachine stateMachine = new StateMachine();
+
+        public TestStateMachine()
+        {
+            stateMachine.AddState(State.LogInServer, DoSomeThing);
+
+            stateMachine.ChangeState(State.LogInServer);
+        }
+
+        private void DoSomeThing()
+        {
+            Console.WriteLine($"state");
         }
     }
 
