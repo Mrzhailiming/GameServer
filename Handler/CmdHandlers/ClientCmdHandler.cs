@@ -3,6 +3,7 @@ using Base.Attributes;
 using Base.BaseData;
 using Base.Client;
 using Base.DataHelper;
+using Base.Logger;
 using Base.Tick;
 using ConnmonMessage;
 using Google.Protobuf;
@@ -118,7 +119,7 @@ namespace Handler.CmdHandlers
             };
 
             SocketInfo.Instance().mCenterServer.Send(message);
-            Console.WriteLine($"client send heartbeat");
+            LoggerHelper.Instance().Log(LogType.Console, $"client send heartbeat");
             return true;
         }
     }

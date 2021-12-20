@@ -9,6 +9,7 @@ namespace Base.Logger
     {
         Console,
         Exception,
+        HeartBeat,
     }
 
     public class LoggerHelper : Singletion<LoggerHelper>

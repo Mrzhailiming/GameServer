@@ -8,7 +8,7 @@ namespace Base.Interface
     /// 需要在启动的时候执行初始化的类继承此接口
     /// 目前不支持 init 函数传参数
     /// </summary>
-    public interface StartInitInterface
+    public interface StartInitInterface // 用特性的方式可以不? 不太行
     {
         /// <summary>
         /// 服务器和客户端需要执行 init 的类可能不一样
