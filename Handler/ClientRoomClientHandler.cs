@@ -12,7 +12,7 @@ using System.Threading;
 namespace Handler
 {
     /// <summary>
-    /// 连接其他客户端的房间服务器
+    /// 连接其他客户端的房间服务器, 一次连接不成功咋办...???
     /// </summary>
     public class ClientRoomClientHandler : SimpleChannelInboundHandler<CommonMessage>
     {

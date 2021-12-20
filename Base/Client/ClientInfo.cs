@@ -1,8 +1,12 @@
 ﻿using Base.BaseData;
+using Base.DataHelper;
+using ConnmonMessage;
 using DotNetty.Transport.Channels;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace Base.Client
 {
@@ -21,6 +25,8 @@ namespace Base.Client
         public Dictionary<IChannelHandlerContext, CommonClient> mRoomServer { get; set; }
             = new Dictionary<IChannelHandlerContext, CommonClient>();
 
+        private int ConnectRoomServerSuccessCount = 0;
+
         public RoomPlayersManager mRoomPlayersManager { get; }
 
         /// <summary>
@@ -31,6 +37,44 @@ namespace Base.Client
         public void SendToCenterServer(CommonMessage message)
         {
             mCenterServer.Send(message);
+        }
+
+        public void Add()
+        {
+            if (++ConnectRoomServerSuccessCount >= 3)
+            {
+                ConnectRoomServerSuccessCount = 0;
+                JionRoom();
+            }
+        }
+
+        private void JionRoom()
+        {
+            Thread.Sleep(3 * 1000);
+
+            Random ran = new Random();
+            int n = ran.Next(100, 1000);
+
+            RCRSJionRoom joinRoom = new RCRSJionRoom()
+            {
+                Camp = ClientInfo.MyCamp, // 告诉房间服务器 我的阵营
+                RoleID = n
+            };
+
+            Console.WriteLine($"my roleid:{n}");
+            byte[] result = MessageBufHelper.GetBytes(joinRoom);
+
+            CommonMessage message = new CommonMessage()
+            {
+                mCMD = CMDS.RCRSJionRoom,
+                mMessageBuffer = result
+            };
+
+            foreach (var RoomServer in mRoomServer.Values)
+            {
+                RoomServer.Send(message);
+                Console.WriteLine($"发送加入房间消息 to {RoomServer.ClientEndPoint}");
+            }
         }
     }
 

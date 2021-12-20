@@ -5,6 +5,7 @@ using ConnmonMessage;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -20,14 +21,14 @@ namespace Base
         /// <summary>
         /// 未执行login的玩家
         /// </summary>
-        private Dictionary<IChannelHandlerContext, CommonClient> mClientDic =
-            new Dictionary<IChannelHandlerContext, CommonClient>();
+        private ConcurrentDictionary<IChannelHandlerContext, CommonClient> mClientDic =
+            new ConcurrentDictionary<IChannelHandlerContext, CommonClient>();
 
         /// <summary>
         /// 登录成功的玩家
         /// </summary>
-        private Dictionary<IChannelHandlerContext, CommonClient> mOnLineClientDic =
-            new Dictionary<IChannelHandlerContext, CommonClient>();
+        private ConcurrentDictionary<IChannelHandlerContext, CommonClient> mOnLineClientDic =
+            new ConcurrentDictionary<IChannelHandlerContext, CommonClient>();
 
         private TickInfos mRoomTickInfos;
 
@@ -56,7 +57,7 @@ namespace Base
         /// <param name="ctx"></param>
         public void AddCient(IChannelHandlerContext ctx)
         {
-            mClientDic.Add(ctx, new CommonClient()
+            mClientDic.TryAdd(ctx, new CommonClient()
             {
                 ctx = ctx,
                 ClientEndPoint = ctx.Channel.RemoteAddress,
@@ -72,7 +73,7 @@ namespace Base
         /// <param name="ctx"></param>
         public void AddOnLogInCient(CommonClient client)
         {
-            mOnLineClientDic.Add(client.ctx, client);
+            mOnLineClientDic.TryAdd(client.ctx, client);
 
             Console.WriteLine($"Client login success Address:{client.ctx.Channel.RemoteAddress}");
         }
@@ -94,7 +95,7 @@ namespace Base
             return client;
         }
 
-        public Dictionary<IChannelHandlerContext, CommonClient> GetAllClient()
+        public ConcurrentDictionary<IChannelHandlerContext, CommonClient> GetAllClient()
         {
             return mOnLineClientDic;
         }

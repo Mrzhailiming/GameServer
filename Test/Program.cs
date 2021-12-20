@@ -1,5 +1,6 @@
 ﻿using Base;
 using Base.Interface;
+using Base.Logger;
 using System;
 
 namespace Test

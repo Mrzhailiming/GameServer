@@ -58,6 +58,8 @@ namespace Handler.CmdHandlers
             };
             // RoomServerJionRoomRsp 发回复的
             client.Send(commonMessage);
+
+            Console.WriteLine($"RoomServer 回复 RSRCJionRoomRsp roleid:{client.RoleID}");
         }
 
         /// <summary>

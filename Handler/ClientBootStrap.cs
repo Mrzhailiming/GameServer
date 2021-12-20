@@ -134,6 +134,11 @@ namespace Base
 
                 IChannel bootstrapChannel = await bootstrap.ConnectAsync(EndPoint);
 
+                if (bootstrapChannel.Active)
+                {
+
+                }
+
                 ChannelManager.Instance().ChannelToRoomServers.Add(RoomServerCount++, new MyChannel()
                 {
                     Channel = bootstrapChannel,

@@ -25,6 +25,8 @@
             // 客户端的房间服务器 监听 随机吧
             IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), Convert.ToInt32(ClientInfo.MyClientServerPort));
             ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
+
+            Console.WriteLine($"本房间服务器的监听端口:{n}");
         }
 
         public static void InitClientServer()
