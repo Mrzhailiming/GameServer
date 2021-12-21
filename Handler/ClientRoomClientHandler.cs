@@ -33,9 +33,8 @@ namespace Handler
                 mMessageBuffer = result
             };
 
-            ctx.WriteAsync(message);
-            ctx.Flush();
-
+            ctx.WriteAndFlushAsync(message);
+            //ctx.Flush();
         }
         /// <summary>
         /// 与 其他房间服务器建立连接后, 发送joinroom消息
@@ -51,7 +50,7 @@ namespace Handler
                 ClientEndPoint = ctx.Channel.RemoteAddress
             };
 
-            SocketInfo.Instance().mRoomServer.Add(ctx, RoomServer);
+            SocketInfo.Instance().mRoomServer.TryAdd(ctx, RoomServer);
 
             // 登录 加入其他房间服务器
             LogIn(ctx);

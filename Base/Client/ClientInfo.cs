@@ -3,6 +3,7 @@ using Base.DataHelper;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -22,8 +23,8 @@ namespace Base.Client
         /// <summary>
         /// 客户端连接的roomserver, 妈的会连接 9 个, 这弄一个也没有用啊
         /// </summary>
-        public Dictionary<IChannelHandlerContext, CommonClient> mRoomServer { get; set; }
-            = new Dictionary<IChannelHandlerContext, CommonClient>();
+        public ConcurrentDictionary<IChannelHandlerContext, CommonClient> mRoomServer { get; set; }
+            = new ConcurrentDictionary<IChannelHandlerContext, CommonClient>();
 
         private int ConnectRoomServerSuccessCount = 0;
 

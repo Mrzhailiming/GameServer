@@ -33,9 +33,8 @@ namespace Handler
                 mMessageBuffer = result
             };
 
-            ctx.WriteAsync(message);
-            ctx.Flush();
-
+            ctx.WriteAndFlushAsync(message);
+            //ctx.Flush();
         }
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
