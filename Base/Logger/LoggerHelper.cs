@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Base.Interface;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -15,12 +16,17 @@ namespace Base.Logger
         HeartBeat,
     }
 
-    public class LoggerHelper : Singletion<LoggerHelper>
+    public class LoggerHelper : Singletion<LoggerHelper>, StartInitInterface
     {
         ConcurrentQueue<LogMessage> mMessageQueue = new ConcurrentQueue<LogMessage>();
 
         Dictionary<LogType, FileStream> mStreams = new Dictionary<LogType, FileStream>();
-        public LoggerHelper()
+
+        public InitType InitType => InitType.Both;
+
+        object StartInitInterface.Instance => Instance();
+
+        public void Init()
         {
             InitStream();
 

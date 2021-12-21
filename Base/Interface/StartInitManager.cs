@@ -35,6 +35,7 @@ namespace Base.Interface
             foreach(var instance in mStartInitInterface)
             {
                 instance.Init();
+                Console.WriteLine($"init {instance}");
             }
         }
 
