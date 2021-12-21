@@ -25,13 +25,13 @@ namespace Base.Client
         public void AddTeamer(CommonClient team)
         {
             mTeamers.TryAdd(team.RoleID, team);
-            Console.WriteLine($"Add team RoleID:{team.RoleID}");
+            Console.WriteLine($"roomserver Add team RoleID:{team.RoleID}");
         }
 
         public void AddEnemy(CommonClient enemy)
         {
             mEnemys.TryAdd(enemy.RoleID, enemy);
-            Console.WriteLine($"Add enemy RoleID:{enemy.RoleID}");
+            Console.WriteLine($"roomserver Add enemy RoleID:{enemy.RoleID}");
         }
 
 

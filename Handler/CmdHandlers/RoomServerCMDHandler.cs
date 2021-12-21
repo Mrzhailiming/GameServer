@@ -94,6 +94,7 @@ namespace Handler.CmdHandlers
                 mMessageBuffer = result
             };
 
+            Console.WriteLine($"roome server 回复 roomclient 登录结果:{client.ctx.Channel.RemoteAddress}");
             client.Send(message);
         }
     }

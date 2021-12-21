@@ -64,7 +64,7 @@ namespace Base
                 Name = ctx.Channel.RemoteAddress.ToString()
             });
 
-            Console.WriteLine($"Add Client {ctx.Channel.RemoteAddress}");
+            Console.WriteLine($"roomserver Add roomClient {ctx.Channel.RemoteAddress}");
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Base
         {
             mOnLineClientDic.TryAdd(client.ctx, client);
 
-            Console.WriteLine($"Client login success Address:{client.ctx.Channel.RemoteAddress}");
+            Console.WriteLine($"roomserver roomClient login success Address:{client.ctx.Channel.RemoteAddress}");
         }
 
         /// <summary>
