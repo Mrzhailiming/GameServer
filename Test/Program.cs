@@ -22,7 +22,7 @@ namespace Test
             LoggerHelper.Instance().Log(LogType.Console, ips);
             LoggerHelper.Instance().Log(LogType.Console, "22222222222");
 
-            Console.WriteLine("Hello World!");
+            LoggerHelper.Instance().Log(LogType.Console, "Hello World!");
 
             StartInitManager.Instance().StartInit(InitType.Server);
 
@@ -43,7 +43,7 @@ namespace Test
 
         private void DoSomeThing()
         {
-            Console.WriteLine($"state");
+            LoggerHelper.Instance().Log(LogType.Console, $"state");
         }
     }
 
@@ -54,7 +54,7 @@ namespace Test
 
     //    public void Init(/*params string[] param*/)
     //    {
-    //        Console.WriteLine("testInitInterface1 success");
+    //        LoggerHelper.Instance().Log(LogType.Console, "testInitInterface1 success");
     //    }
     //}
 
@@ -64,7 +64,7 @@ namespace Test
 
     //    public void Init(/*params string[] param*/)
     //    {
-    //        Console.WriteLine("testInitInterface2 success");
+    //        LoggerHelper.Instance().Log(LogType.Console, "testInitInterface2 success");
     //    }
     //}
 
@@ -74,7 +74,7 @@ namespace Test
 
     //    public void Init(/*params string[] param*/)
     //    {
-    //        Console.WriteLine("testInitInterface3 success");
+    //        LoggerHelper.Instance().Log(LogType.Console, "testInitInterface3 success");
     //    }
     //}
 }

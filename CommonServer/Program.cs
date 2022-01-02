@@ -47,7 +47,7 @@ namespace Server
 
                 IChannel bootstrapChannel = await bootstrap.BindAsync(8888);
 
-                //Console.WriteLine("key to quit");
+                //LoggerHelper.Instance().Log(LogType.Console, "key to quit");
                 //Console.ReadKey();
 
                 //await bootstrapChannel.CloseAsync();

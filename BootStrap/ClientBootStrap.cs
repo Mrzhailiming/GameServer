@@ -81,7 +81,7 @@
 
 //                IChannel bootstrapChannel = await bootstrap.BindAsync(EndPoint);
 
-//                Console.WriteLine("key to quit");
+//                LoggerHelper.Instance().Log(LogType.Console, "key to quit");
 //                Console.ReadKey();
 
 //                await bootstrapChannel.CloseAsync();
@@ -125,7 +125,7 @@
 
 //                IChannel bootstrapChannel = await bootstrap.BindAsync(EndPoint);
 
-//                Console.WriteLine("key to quit");
+//                LoggerHelper.Instance().Log(LogType.Console, "key to quit");
 //                Console.ReadKey();
 
 //                await bootstrapChannel.CloseAsync();

@@ -2,6 +2,7 @@
 using Base.BaseData;
 using Base.Client;
 using Base.Interface;
+using Base.Logger;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using System;
@@ -126,16 +127,16 @@ namespace Base
                     var handler = Delegate.CreateDelegate(typeof(Action<CommonClient, CommonMessage>), method) as Action<CommonClient, CommonMessage>;
                     if (!mActions.TryAdd(arrr.CmdID, handler))
                     {
-                        Console.WriteLine($"注册{cMDType}消息处理失败 CmdID:{arrr.CmdID}, handler:{method.Name}");
+                        LoggerHelper.Instance().Log(LogType.Console, $"注册{cMDType}消息处理失败 CmdID:{arrr.CmdID}, handler:{method.Name}");
                     }
                     else
                     {
-                        Console.WriteLine($"注册{cMDType}消息处理成功 CmdID:{arrr.CmdID}, handler:{method.Name}");
+                        LoggerHelper.Instance().Log(LogType.Console, $"注册{cMDType}消息处理成功 CmdID:{arrr.CmdID}, handler:{method.Name}");
                     }
                 }
             }
 
-            Console.WriteLine($"共注册{cMDType}消息处理:{mActions.Count}个");
+            LoggerHelper.Instance().Log(LogType.Console, $"共注册{cMDType}消息处理:{mActions.Count}个");
         }
 
         /// <summary>
@@ -147,12 +148,12 @@ namespace Base
 
             if (mActions.TryGetValue(message.mCMD, out action))
             {
-                //Console.WriteLine($"cmd:{message.mCMD} find");
+                //LoggerHelper.Instance().Log(LogType.Console, $"cmd:{message.mCMD} find");
                 mCMDSDispatcher.Dispatch(action, toWho, message);
             }
             else
             {
-                Console.WriteLine($"cmd:{message.mCMD} not find");
+                LoggerHelper.Instance().Log(LogType.Console, $"cmd:{message.mCMD} not find");
             }
         }
 
@@ -162,7 +163,7 @@ namespace Base
             Type realType = type.GetType();
             if (!mMessageTypes.TryGetValue(realType.ToString(), out parser))
             {
-                //Console.WriteLine($"faild 未找到:{type} 对应的 Parser");
+                //LoggerHelper.Instance().Log(LogType.Console, $"faild 未找到:{type} 对应的 Parser");
             }
             return parser;
         }
@@ -177,11 +178,11 @@ namespace Base
             // Person -> ParseFrom 方法的映射 (根据Person 找到 反序列化根据Person的方法)
             if (mMessageTypes.TryAdd(messageTypeName, messageParser))
             {
-                //Console.WriteLine($"AddMessageParser type:{messageTypeName} success");
+                //LoggerHelper.Instance().Log(LogType.Console, $"AddMessageParser type:{messageTypeName} success");
             }
             else
             {
-                Console.WriteLine($"AddMessageParser type:{messageTypeName} faild");
+                LoggerHelper.Instance().Log(LogType.Console, $"AddMessageParser type:{messageTypeName} faild");
             }
         }
     }

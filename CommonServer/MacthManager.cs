@@ -1,6 +1,7 @@
 ﻿using Base.BaseData;
 using Base.DataHelper;
 using Base.Interface;
+using Base.Logger;
 using Base.Tick;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
@@ -43,7 +44,7 @@ namespace Base
             mServerTickInfos.AddTick(new TickInfo(Match, 3 * 1000, mServerTickInfos));
 
             TickManager.Instance().AddTickInfo(new TickInfo(Update, 1 * 1000, mServerTickInfos));
-            Console.WriteLine($"begin match tick");
+            LoggerHelper.Instance().Log(LogType.Console, $"begin match tick");
         }
 
         public const int PerMatchNum = 2;
@@ -134,7 +135,7 @@ namespace Base
             {
                 client.Send(message);
             }
-            Console.WriteLine($"match success");
+            LoggerHelper.Instance().Log(LogType.Console, $"match success");
 
             return true;
         }

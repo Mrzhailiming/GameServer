@@ -1,5 +1,6 @@
 ﻿using Base;
 using Base.BaseData;
+using Base.Logger;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
@@ -20,7 +21,7 @@ namespace Handler
 
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
-            Console.WriteLine($"server recv a connect");
+            LoggerHelper.Instance().Log(LogType.Console, $"server recv a connect");
             ClientManager.Instance().AddCient(ctx);
         }
 

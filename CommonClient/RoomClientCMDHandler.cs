@@ -44,7 +44,7 @@ namespace Handler.CmdHandlers
 
             }
 
-            Console.WriteLine($"加入房间成功:{client.ClientEndPoint}");
+            LoggerHelper.Instance().Log(LogType.Console, $"加入房间成功:{client.ClientEndPoint}");
 
             SynchronousInfo synchronousInfo = new SynchronousInfo()
             {
@@ -75,7 +75,7 @@ namespace Handler.CmdHandlers
             {
                 // 
             }
-            Console.WriteLine($"客户端登录房间服务器成功{client.ctx.Channel.RemoteAddress}, 准备加入房间 JionRoom");
+            LoggerHelper.Instance().Log(LogType.Console, $"客户端登录房间服务器成功{client.ctx.Channel.RemoteAddress}, 准备加入房间 JionRoom");
 
             SocketInfo.Instance().Add(); // 增加成功连接房间服的个数
 

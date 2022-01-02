@@ -58,7 +58,7 @@ namespace Handler
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
         {
-            //Console.WriteLine($"recv from clientRoomServer success {msg.mCMD}");
+            //LoggerHelper.Instance().Log(LogType.Console, $"recv from clientRoomServer success {msg.mCMD}");
             // 投递
             CMDHelperManager.Instance().FireRoomClient(ctx, msg);
         }

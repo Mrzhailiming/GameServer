@@ -1,4 +1,5 @@
 ﻿using Base.BaseData;
+using Base.Logger;
 using Base.Tick;
 using System;
 using System.Collections.Concurrent;
@@ -28,7 +29,7 @@ namespace Base
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Task.DoAction() Exception:\r\n" +
+                LoggerHelper.Instance().Log(LogType.Console, $"Task.DoAction() Exception:\r\n" +
                     $"client:{mClient.Name} action:{mAction} message:{mMessage}\r\n" +
                     $"{ex}");
             }
@@ -76,7 +77,7 @@ namespace Base
             //获取处于活动状态的线程池请求的数目
             //ThreadPool.GetMaxThreads(out workerThreads, out portThreads);
             //在控制台中显示处于活动状态的线程池请求的数目
-            //Console.WriteLine("设置前，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
+            //LoggerHelper.Instance().Log(LogType.Console, "设置前，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
 
             workerThreads = 10;//设置辅助线程的最大数
 
@@ -88,7 +89,7 @@ namespace Base
 
             //在控制台中显示设置后的处于活动状态的线程池请求的数目
 
-            Console.WriteLine("设置后，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
+            LoggerHelper.Instance().Log(LogType.Console, "设置后，线程池中辅助线程的最大数为：" + workerThreads.ToString() + "；线程池中异步I/O线程的最大数为：" + portThreads.ToString());
 
         }
 
@@ -114,7 +115,7 @@ namespace Base
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"CMDSDispatcher.Execute() Exception:\r\n" +
+                    LoggerHelper.Instance().Log(LogType.Console, $"CMDSDispatcher.Execute() Exception:\r\n" +
                                         $"{ex}");
                 }
                 finally

@@ -35,7 +35,7 @@ namespace Base.Tick
                 }
                 else if (timer.ElapsedMilliseconds - prevTickMS > mMnterval)
                 {
-                    //Console.WriteLine($"TickTimer CanTick 间隔{timer.ElapsedMilliseconds - prevTickMS}");
+                    //LoggerHelper.Instance().Log(LogType.Console, $"TickTimer CanTick 间隔{timer.ElapsedMilliseconds - prevTickMS}");
                     prevTickMS = timer.ElapsedMilliseconds;
                     return true;
                 }

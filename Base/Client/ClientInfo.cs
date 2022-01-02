@@ -1,5 +1,6 @@
 ﻿using Base.BaseData;
 using Base.DataHelper;
+using Base.Logger;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
 using System;
@@ -62,7 +63,7 @@ namespace Base.Client
                 RoleID = n
             };
 
-            Console.WriteLine($"my roleid:{n}");
+            LoggerHelper.Instance().Log(LogType.Console, $"my roleid:{n}");
             byte[] result = MessageBufHelper.GetBytes(joinRoom);
 
             CommonMessage message = new CommonMessage()
@@ -74,7 +75,7 @@ namespace Base.Client
             foreach (var RoomServer in mRoomServer.Values)
             {
                 RoomServer.Send(message);
-                Console.WriteLine($"发送加入房间消息 to {RoomServer.ClientEndPoint}");
+                LoggerHelper.Instance().Log(LogType.Console, $"发送加入房间消息 to {RoomServer.ClientEndPoint}");
             }
         }
     }

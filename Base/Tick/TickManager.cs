@@ -1,4 +1,5 @@
 ﻿using Base.Interface;
+using Base.Logger;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -64,7 +65,7 @@ namespace Base.Tick
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"TickManager Execute DoTick 出现异常\r\n" +
+                            LoggerHelper.Instance().Log(LogType.Console, $"TickManager Execute DoTick 出现异常\r\n" +
                                 $"{ex}");
                             ret = false;
                         }
@@ -72,7 +73,7 @@ namespace Base.Tick
                         {
                             if (!ret)
                             {
-                                Console.WriteLine($"移除tick owner:{tick.mOwner}");
+                                LoggerHelper.Instance().Log(LogType.Console, $"移除tick owner:{tick.mOwner}");
                                 mTickInfos.Remove(tick);
                             }
                         }
@@ -82,7 +83,7 @@ namespace Base.Tick
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"TickManager Execute 出现异常\r\n" +
+                    LoggerHelper.Instance().Log(LogType.Console, $"TickManager Execute 出现异常\r\n" +
                         $"{ex}");
                 }
             }

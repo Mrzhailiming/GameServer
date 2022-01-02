@@ -6,6 +6,7 @@
     using Base;
     using Base.Client;
     using Base.Interface;
+    using Base.Logger;
     using Base.Tick;
 
     class Program
@@ -26,7 +27,7 @@
             IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), Convert.ToInt32(ClientInfo.MyClientServerPort));
             ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
 
-            Console.WriteLine($"本房间服务器的监听端口:{n}");
+            LoggerHelper.Instance().Log(LogType.Console, $"本房间服务器的监听端口:{n}");
         }
 
         public static void InitClientServer()

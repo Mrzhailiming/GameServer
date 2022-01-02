@@ -1,6 +1,7 @@
 ﻿using Base.BaseData;
 using Base.DataHelper;
 using Base.Interface;
+using Base.Logger;
 using Base.Tick;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
@@ -50,7 +51,7 @@ namespace Base
             mServerTickInfos.AddTick(new TickInfo(HeartBeat, 1 * 1000, mServerTickInfos));
 
             TickManager.Instance().AddTickInfo(new TickInfo(Update, 1 * 1000, mServerTickInfos));
-            Console.WriteLine($"begin match tick");
+            LoggerHelper.Instance().Log(LogType.Console, $"begin match tick");
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Base
                 Name = ctx.Channel.RemoteAddress.ToString()
             });
 
-            Console.WriteLine($"Add Client {ctx.Channel.RemoteAddress}");
+            LoggerHelper.Instance().Log(LogType.Console, $"Add Client {ctx.Channel.RemoteAddress}");
         }
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace Base
         {
             mOnLineClientDic.TryAdd(client.ctx, client);
 
-            Console.WriteLine($"Client login success Address:{client.ctx.Channel.RemoteAddress}");
+            LoggerHelper.Instance().Log(LogType.Console, $"Client login success Address:{client.ctx.Channel.RemoteAddress}");
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace Base
 
             if (!mClientDic.TryGetValue(ctx, out client))
             {
-                //Console.WriteLine($"not find Client {ctx.Channel.RemoteAddress}");
+                //LoggerHelper.Instance().Log(LogType.Console, $"not find Client {ctx.Channel.RemoteAddress}");
             }
 
             return client;
@@ -218,7 +219,7 @@ namespace Base
                 {
                     client.Send(message);
                 }
-                Console.WriteLine($"match success");
+                LoggerHelper.Instance().Log(LogType.Console, $"match success");
             }
 
             return true;

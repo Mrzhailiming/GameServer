@@ -1,5 +1,6 @@
 ﻿using Base.BaseData;
 using Base.DataHelper;
+using Base.Logger;
 using ConnmonMessage;
 using System;
 using System.Collections.Concurrent;
@@ -25,13 +26,13 @@ namespace Base.Client
         public void AddTeamer(CommonClient team)
         {
             mTeamers.TryAdd(team.RoleID, team);
-            Console.WriteLine($"roomserver Add team RoleID:{team.RoleID}");
+            LoggerHelper.Instance().Log(LogType.Console, $"roomserver Add team RoleID:{team.RoleID}");
         }
 
         public void AddEnemy(CommonClient enemy)
         {
             mEnemys.TryAdd(enemy.RoleID, enemy);
-            Console.WriteLine($"roomserver Add enemy RoleID:{enemy.RoleID}");
+            LoggerHelper.Instance().Log(LogType.Console, $"roomserver Add enemy RoleID:{enemy.RoleID}");
         }
 
 

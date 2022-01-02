@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Base.Logger;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -35,7 +36,7 @@ namespace Base.Interface
             foreach(var instance in mStartInitInterface)
             {
                 instance.Init();
-                Console.WriteLine($"init {instance}");
+                LoggerHelper.Instance().Log(LogType.Console, $"init {instance}");
             }
         }
 
@@ -45,7 +46,7 @@ namespace Base.Interface
 
             if (null == dlls || dlls.Count <= 0)
             {
-                Console.WriteLine($"not find any dll");
+                LoggerHelper.Instance().Log(LogType.Console, $"not find any dll");
                 return;
             }
 
@@ -82,21 +83,21 @@ namespace Base.Interface
         {
             if (!File.Exists(dllName))
             {
-                Console.WriteLine($"not find dll:{dllName}");
+                LoggerHelper.Instance().Log(LogType.Console, $"not find dll:{dllName}");
                 return;
             }
 
             var assembly = Assembly.LoadFrom(dllName);
             if (null == assembly)
             {
-                Console.WriteLine($"Assembly.LoadFrom dll is null:{dllName}");
+                LoggerHelper.Instance().Log(LogType.Console, $"Assembly.LoadFrom dll is null:{dllName}");
                 return;
             }
 
             var types = assembly.GetTypes();
             if (null == types)
             {
-                Console.WriteLine($"assembly.GetTypes is null:{dllName}");
+                LoggerHelper.Instance().Log(LogType.Console, $"assembly.GetTypes is null:{dllName}");
                 return;
             }
 
@@ -142,7 +143,7 @@ namespace Base.Interface
             PropertyInfo[] Propertys = type.GetProperties(flags);
             if (null == Propertys || Propertys.Length < 1)
             {
-                Console.WriteLine($"ProcessType {type} has no property");
+                LoggerHelper.Instance().Log(LogType.Console, $"ProcessType {type} has no property");
             }
 
             StartInitInterface Instance = null;
@@ -169,7 +170,7 @@ namespace Base.Interface
             // 没找到静态实例 返回
             if (null == Instance)
             {
-                Console.WriteLine($"ProcessType {type} has no static Instance");
+                LoggerHelper.Instance().Log(LogType.Console, $"ProcessType {type} has no static Instance");
                 return;
             }
 

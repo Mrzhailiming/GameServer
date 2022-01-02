@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Base.Logger;
+using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,7 +22,7 @@ namespace Base.DataHelper
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"MessageBufHelper GetBytes() 异常\r\n" +
+                LoggerHelper.Instance().Log(LogType.Console, $"MessageBufHelper GetBytes() 异常\r\n" +
                     $"{ex}");
             }
 
