@@ -58,6 +58,7 @@ namespace Base.Logger
         }
         public void Log(LogType logType, string msg)
         {
+            Console.WriteLine($"{msg}");
             mMessageQueue.Enqueue(new LogMessage(logType, msg));
             ResetEvent.Set(); // 唤醒 (发信号)
         }
@@ -81,10 +82,13 @@ namespace Base.Logger
                 }
                 catch
                 {
+                    
+                }
+                finally
+                {
                     ResetEvent.Reset(); // 重置 信号
                     ResetEvent.WaitOne(10); // 阻塞当前线程, 直到收到信号
                 }
-                
             }
         }
 

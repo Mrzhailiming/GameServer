@@ -77,8 +77,7 @@ namespace Base.Interface
                 }
             }
 
-            LoggerHelper.Instance().Log(LogType.Info, $"add dll sucess path:{dllsPath}\r\n" +
-                $"path:{dllsPath}");
+            LoggerHelper.Instance().Log(LogType.Info, $"add dll sucess path:{dllsPath}");
             return dlls;
         }
 

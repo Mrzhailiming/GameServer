@@ -37,9 +37,26 @@ namespace Base
             new LinkedList<CommonClient>();
 
         private TickInfos mServerTickInfos;
-        private void BeginTick()
+
+        #region StartInitInterface
+
+        object StartInitInterface.Instance => Instance();
+
+        private InitType mInitType = InitType.Server;
+        public InitType InitType { get => mInitType; }
+        public void Init()
+        {
+            BeginTick();
+        }
+        
+        #endregion StartInitInterface
+
+        public MacthManager()
         {
             mServerTickInfos = new TickInfos(this);
+        }
+        private void BeginTick()
+        {
             // 增加匹配的tick
             mServerTickInfos.AddTick(new TickInfo(Match, 3 * 1000, mServerTickInfos));
 
@@ -138,16 +155,6 @@ namespace Base
             LoggerHelper.Instance().Log(LogType.Console, $"match success");
 
             return true;
-        }
-
-        object StartInitInterface.Instance => Instance();
-
-        private InitType mInitType = InitType.Server;
-        public InitType InitType { get => mInitType; }
-
-        public void Init()
-        {
-            BeginTick();
         }
     }
 }

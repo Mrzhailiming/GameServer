@@ -36,22 +36,13 @@ namespace Base
         private ConcurrentDictionary<IChannelHandlerContext, CommonClient> mOffLineClientDic =
             new ConcurrentDictionary<IChannelHandlerContext, CommonClient>();
 
-        /// <summary>
-        /// 正在匹配的玩家
-        /// </summary>
-        private LinkedList<CommonClient> mOnMatchClients =
-            new LinkedList<CommonClient>();
-
         private TickInfos mServerTickInfos;
         private void BeginTick()
         {
             mServerTickInfos = new TickInfos(this);
-            // 增加匹配的tick
-            mServerTickInfos.AddTick(new TickInfo(Match, 3 * 1000, mServerTickInfos));
             mServerTickInfos.AddTick(new TickInfo(HeartBeat, 1 * 1000, mServerTickInfos));
 
             TickManager.Instance().AddTickInfo(new TickInfo(Update, 1 * 1000, mServerTickInfos));
-            LoggerHelper.Instance().Log(LogType.Console, $"begin match tick");
         }
 
         /// <summary>
@@ -92,7 +83,7 @@ namespace Base
 
             if (!mClientDic.TryGetValue(ctx, out client))
             {
-                //LoggerHelper.Instance().Log(LogType.Console, $"not find Client {ctx.Channel.RemoteAddress}");
+                LoggerHelper.Instance().Log(LogType.Console, $"not find Client {ctx.Channel.RemoteAddress}");
             }
 
             return client;
@@ -113,15 +104,6 @@ namespace Base
         public ConcurrentDictionary<IChannelHandlerContext, CommonClient> GetAllOfflineClient()
         {
             return mOffLineClientDic;
-        }
-
-
-        public const int PerMatchNum = 2;
-
-
-        public void AddMatchClient(CommonClient client)
-        {
-            mOnMatchClients.AddLast(client);
         }
 
         bool Update(long ticks)
@@ -149,79 +131,6 @@ namespace Base
                     mOffLineClientDic.TryAdd(client.ctx, client);
                 }
             }
-            return true;
-        }
-
-        bool Match(long ticks)
-        {
-            if (mOnMatchClients.Count >= PerMatchNum)
-            {
-                List<string> ips = new List<string>();
-                List<string> ports = new List<string>();
-
-                LinkedListNode<CommonClient> node = mOnMatchClients.First;
-
-                List<CommonClient> RedTeam = new List<CommonClient>();
-                List<CommonClient> BlueTeam = new List<CommonClient>();
-
-                for (int count = 0; count < PerMatchNum; ++count)
-                {
-                    if (null == node)
-                    {
-                        break;
-                    }
-
-                    if (count % 2 == 0)
-                    {
-                        RedTeam.Add(node.Value);
-                    }
-                    else
-                    {
-                        BlueTeam.Add(node.Value);
-                    }
-
-                    var RemoveNode = node;
-                    node = node.Next;
-
-                    mOnMatchClients.Remove(RemoveNode);
-                }
-
-                StringBuilder stringBuilder = new StringBuilder();
-
-                foreach (CommonClient client in RedTeam)
-                {
-                    stringBuilder.Append(client.RoomServerIP).Append("&");
-                    stringBuilder.Append(client.RoomServerPort).Append("&");
-                    stringBuilder.Append("Red").Append("|");
-                }
-
-                foreach (CommonClient client in BlueTeam)
-                {
-                    stringBuilder.Append(client.RoomServerIP).Append("&");
-                    stringBuilder.Append(client.RoomServerPort).Append("&");
-                    stringBuilder.Append("Blue").Append("|");
-                }
-
-                SCMatch scJoinRoom = new SCMatch()
-                {
-                    AllClient = stringBuilder.ToString()
-                };
-
-                byte[] result = MessageBufHelper.GetBytes(scJoinRoom);
-
-                CommonMessage message = new CommonMessage()
-                {
-                    mCMD = CMDS.SCMatch,
-                    mMessageBuffer = result
-                };
-
-                foreach (var client in mClientDic.Values)
-                {
-                    client.Send(message);
-                }
-                LoggerHelper.Instance().Log(LogType.Console, $"match success");
-            }
-
             return true;
         }
 
