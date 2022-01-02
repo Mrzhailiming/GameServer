@@ -1,44 +1,44 @@
 syntax = "proto3";	
-option csharp_namespace = "ConnmonMessage";
+option csharp_namespace = "Connmonpublic class";
 
-message HeartBeat {
+public class HeartBeat {
   string state = 1;
   int64 tick = 2;
 }
 
-message SynchronousInfo{
+public class SynchronousInfo{
 	string name = 1;
 	string operationInfo = 2; // 玩家的操作
 }
 
-message RCRSJionRoom{
+public class RCRSJionRoom{
 	int64 roleID = 1; // 玩家ID
 	string camp = 2; // 加入类型 0 队友 1 敌人
 }
 
-message RSRCJionRoomRsp{
+public class RSRCJionRoomRsp{
 	int32 Result = 1; // 房间服务器回复客户端,加入房间结果
 }
 
-message CSLogIn{
+public class CSLogIn{
 	string RoomServerIP = 1;
 	int32 RoomServerPort = 2;
 }
 
-message SCLogIn{
+public class SCLogIn{
 	int32 roleID = 1;
 	int32 result = 2;
 }
 
-message CSMatch{
+public class CSMatch{
 	int32 roleID = 1;
 }
 
-message SCMatch{
+public class SCMatch{
 	string allClient = 1; // 服务器通知客户端,要去连接的其他客户端 端口 9999
 }
 
-message RSRCSynchronousInfo{
+public class RSRCSynchronousInfo{
 	string name = 1;
 	string operationInfo = 2; // 玩家的操作
 	string camp = 3; // 阵营

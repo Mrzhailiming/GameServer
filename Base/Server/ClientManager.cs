@@ -102,7 +102,7 @@ namespace Base
             return mOnLineClientDic;
         }
 
-        public const int PerMatchNum = 4;
+        public const int PerMatchNum = 2;
 
 
         public void AddMatchClient(CommonClient client)
