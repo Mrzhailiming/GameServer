@@ -105,6 +105,15 @@ namespace Base
         {
             return mOnLineClientDic;
         }
+        /// <summary>
+        /// 离线玩家
+        /// </summary>
+        /// <returns></returns>
+        public ConcurrentDictionary<IChannelHandlerContext, CommonClient> GetAllOfflineClient()
+        {
+            return mOffLineClientDic;
+        }
+
 
         public const int PerMatchNum = 2;
 
