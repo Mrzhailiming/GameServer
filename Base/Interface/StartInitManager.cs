@@ -6,10 +6,14 @@ using System.Reflection;
 
 namespace Base.Interface
 {
+    /// <summary>
+    /// 通过反射获取程序集所有继承 StartInitInterface 的类
+    /// 调用 Init 函数
+    /// </summary>
     public class StartInitManager : Singletion<StartInitManager>
     {
 
-        Dictionary<PropertyInfo, MethodInfo> mInstance2Method = new Dictionary<PropertyInfo, MethodInfo>();
+        //Dictionary<PropertyInfo, MethodInfo> mInstance2Method = new Dictionary<PropertyInfo, MethodInfo>();
 
         List<StartInitInterface> mStartInitInterface = new List<StartInitInterface>();
 
@@ -21,11 +25,11 @@ namespace Base.Interface
         /// <summary>
         /// 服务器客户端都在用, 要不要区分一下...
         /// </summary>
-        public void StartInit(InitType initType)
+        public void StartInit(InitType initType, string dllsPath)
         {
             mInitType = initType;
 
-            Init();
+            Init(dllsPath);
 
             RunAllInit();
         }
@@ -40,9 +44,9 @@ namespace Base.Interface
             }
         }
 
-        private void Init()
+        private void Init(string dllsPath)
         {
-            List<string> dlls = GetDlls();
+            List<string> dlls = GetDlls(dllsPath);
 
             if (null == dlls || dlls.Count <= 0)
             {
@@ -57,12 +61,9 @@ namespace Base.Interface
         }
 
 
-        private List<string> GetDlls()
+        private List<string> GetDlls(string dllsPath)
         {
-            string exePath = Directory.GetCurrentDirectory();
-
-            string[] files = Directory.GetFiles(exePath);
-
+            string[] files = Directory.GetFiles(dllsPath);
 
             List<string> dlls = new List<string>();
             foreach (string file in files)
@@ -72,9 +73,12 @@ namespace Base.Interface
                 if (".dll" == ext)
                 {
                     dlls.Add(file);
+                    LoggerHelper.Instance().Log(LogType.Info, $"add dll {file}");
                 }
             }
 
+            LoggerHelper.Instance().Log(LogType.Info, $"add dll sucess path:{dllsPath}\r\n" +
+                $"path:{dllsPath}");
             return dlls;
         }
 

@@ -3,6 +3,7 @@ using Base.Interface;
 using Base.Logger;
 using Base.StateMachine;
 using System;
+using System.IO;
 
 namespace Test
 {
@@ -24,7 +25,7 @@ namespace Test
 
             LoggerHelper.Instance().Log(LogType.Console, "Hello World!");
 
-            StartInitManager.Instance().StartInit(InitType.Server);
+            StartInitManager.Instance().StartInit(InitType.Server, Directory.GetCurrentDirectory());
 
             TestStateMachine testStateMachine = new TestStateMachine();
         }
