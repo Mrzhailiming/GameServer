@@ -97,6 +97,10 @@ namespace Base
             return client;
         }
 
+        /// <summary>
+        /// 登录成功的玩家
+        /// </summary>
+        /// <returns></returns>
         public ConcurrentDictionary<IChannelHandlerContext, CommonClient> GetAllClient()
         {
             return mOnLineClientDic;

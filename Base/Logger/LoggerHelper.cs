@@ -12,6 +12,7 @@ namespace Base.Logger
     public enum LogType
     {
         Console,
+        Info,
         Exception,
         HeartBeat,
     }
@@ -22,6 +23,8 @@ namespace Base.Logger
 
         Dictionary<LogType, FileStream> mStreams = new Dictionary<LogType, FileStream>();
 
+        // 用这种方式同步 (有任务的时候, 唤醒处理线程即可)
+        static ManualResetEvent ResetEvent = new ManualResetEvent(false);
         public InitType InitType => InitType.Both;
 
         object StartInitInterface.Instance => Instance();
@@ -45,15 +48,9 @@ namespace Base.Logger
                 Directory.CreateDirectory(exePath);
             }
 
-
             foreach (LogType type in Enum.GetValues(typeof(LogType)))
             {
                 string fileFullPath = $"{exePath}\\{type}.txt";
-
-                //if (!File.Exists(fileFullPath))
-                //{
-                //    File.Create(fileFullPath);
-                //}
 
                 FileStream stream = new FileStream(fileFullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                 mStreams.Add(type, stream);
@@ -62,24 +59,32 @@ namespace Base.Logger
         public void Log(LogType logType, string msg)
         {
             mMessageQueue.Enqueue(new LogMessage(logType, msg));
+            ResetEvent.Set(); // 唤醒 (发信号)
         }
 
         private void Execute()
         {
             while (true)
             {
-                LogMessage message;
-                while (mMessageQueue.TryDequeue(out message))
+                try
                 {
-                    OutPut(message);
-                }
+                    LogMessage message;
+                    while (mMessageQueue.TryDequeue(out message))
+                    {
+                        OutPut(message);
+                    }
 
-                foreach(var stream in mStreams.Values)
+                    foreach (var stream in mStreams.Values)
+                    {
+                        stream.Flush();
+                    }
+                }
+                catch
                 {
-                    stream.Flush();
+                    ResetEvent.Reset(); // 重置 信号
+                    ResetEvent.WaitOne(10); // 阻塞当前线程, 直到收到信号
                 }
-
-                Thread.Sleep(5 * 1000);
+                
             }
         }
 
