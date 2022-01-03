@@ -12,6 +12,7 @@ namespace Base.Logger
     public enum LogType
     {
         Console,
+        Info,
         Exception,
         HeartBeat,
     }
@@ -26,9 +27,9 @@ namespace Base.Logger
 
         object StartInitInterface.Instance => Instance();
 
-        public void Init()
+        public void Init(params string[] param)
         {
-            InitStream();
+            InitStream(param[0]);
 
             Thread thread = new Thread(Execute);
             thread.Name = "LoggerHelper";
@@ -36,9 +37,9 @@ namespace Base.Logger
             thread.Start();
         }
 
-        private void InitStream()
+        private void InitStream(string logPath)
         {
-            string exePath = $"{Directory.GetCurrentDirectory()}\\Log";
+            string exePath = $"{logPath}\\Log";
 
             if (!Directory.Exists(exePath))
             {
