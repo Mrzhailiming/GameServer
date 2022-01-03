@@ -42,6 +42,16 @@ namespace Base
             new LinkedList<CommonClient>();
 
         private TickInfos mServerTickInfos;
+
+        object StartInitInterface.Instance => Instance();
+
+        private InitType mInitType = InitType.Server;
+        public InitType InitType { get => mInitType; }
+
+        public void Init(params string[] param)
+        {
+            BeginTick();
+        }
         private void BeginTick()
         {
             mServerTickInfos = new TickInfos(this);
@@ -211,14 +221,6 @@ namespace Base
             return true;
         }
 
-        object StartInitInterface.Instance => Instance();
-
-        private InitType mInitType = InitType.Server;
-        public InitType InitType { get => mInitType; }
-
-        public void Init()
-        {
-            BeginTick();
-        }
+        
     }
 }

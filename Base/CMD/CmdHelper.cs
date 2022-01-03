@@ -2,6 +2,7 @@
 using Base.BaseData;
 using Base.Client;
 using Base.Interface;
+using Base.Logger;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using System;
@@ -29,14 +30,14 @@ namespace Base
         /// <summary>
         /// 对中心服务器来说, 没必要把所有的客户端要用的消息处理函数都注册了
         /// </summary>
-        public void Init()
+        public void Init(params string[] param)
         {
             mCMDSDispatcher = new CMDSDispatcher();
 
-            ClientCmdHelper.Init(CMDType.Client);
-            RoomClientCmdHelper.Init(CMDType.RoomClient);
-            ServerCmdHelper.Init(CMDType.Server);
-            RoomServerCmdHelper.Init(CMDType.RoomServer);
+            ClientCmdHelper.Init(CMDType.Client, param[0]);
+            RoomClientCmdHelper.Init(CMDType.RoomClient, param[0]);
+            ServerCmdHelper.Init(CMDType.Server, param[0]);
+            RoomServerCmdHelper.Init(CMDType.RoomServer, param[0]);
         }
         public void FireClient(IChannelHandlerContext ctx, CommonMessage message)
         {
@@ -88,19 +89,42 @@ namespace Base
         // 与 cmd 对应的 handler
         private Dictionary<CMDS, Action<CommonClient, CommonMessage>> mActions;
 
-        public void Init(CMDType cMDType)
+        public void Init(CMDType cMDType, string dllsPath)
         {
             mActions = new Dictionary<CMDS, Action<CommonClient, CommonMessage>>();
 
-            InitMessageHandler(cMDType);
+
+            List<string> dlls = GetDlls(dllsPath);
+
+            foreach (var dllFullPath in dlls)
+            {
+                InitMessageHandler(cMDType, dllFullPath);
+            }
         }
 
-        private void InitMessageHandler(CMDType cMDType)
+        private List<string> GetDlls(string dllsPath)
         {
-            string exePath = Directory.GetCurrentDirectory();
+            string[] files = Directory.GetFiles(dllsPath);
 
-            string path = $"{exePath}\\Handler.dll";
-            Assembly assembly = Assembly.LoadFile(path);
+            List<string> dlls = new List<string>();
+            foreach (string file in files)
+            {
+                string ext = Path.GetExtension(file).ToLower();
+
+                if (".dll" == ext)
+                {
+                    dlls.Add(file);
+                    //LoggerHelper.Instance().Log(LogType.Info, $"add dll {file}");
+                }
+            }
+
+            //LoggerHelper.Instance().Log(LogType.Info, $"add dll sucess path:{dllsPath}");
+            return dlls;
+        }
+
+        private void InitMessageHandler(CMDType cMDType, string dllFullPath)
+        {
+            Assembly assembly = Assembly.LoadFile(dllFullPath);
             var types = assembly.GetTypes();
 
             foreach (Type type in types)
@@ -126,16 +150,16 @@ namespace Base
                     var handler = Delegate.CreateDelegate(typeof(Action<CommonClient, CommonMessage>), method) as Action<CommonClient, CommonMessage>;
                     if (!mActions.TryAdd(arrr.CmdID, handler))
                     {
-                        Console.WriteLine($"注册{cMDType}消息处理失败 CmdID:{arrr.CmdID}, handler:{method.Name}");
+                        LoggerHelper.Instance().Log(LogType.Console, $"注册{cMDType}消息处理失败 CmdID:{arrr.CmdID}, handler:{method.Name}");
                     }
                     else
                     {
-                        Console.WriteLine($"注册{cMDType}消息处理成功 CmdID:{arrr.CmdID}, handler:{method.Name}");
+                        LoggerHelper.Instance().Log(LogType.Console, $"注册{cMDType}消息处理成功 CmdID:{arrr.CmdID}, handler:{method.Name}");
                     }
                 }
             }
 
-            Console.WriteLine($"共注册{cMDType}消息处理:{mActions.Count}个");
+            //LoggerHelper.Instance().Log(LogType.Console, $"共注册{cMDType}消息处理:{mActions.Count}个");
         }
 
         /// <summary>
@@ -147,12 +171,12 @@ namespace Base
 
             if (mActions.TryGetValue(message.mCMD, out action))
             {
-                //Console.WriteLine($"cmd:{message.mCMD} find");
+                //LoggerHelper.Instance().Log(LogType.Console, $"cmd:{message.mCMD} find");
                 mCMDSDispatcher.Dispatch(action, toWho, message);
             }
             else
             {
-                Console.WriteLine($"cmd:{message.mCMD} not find");
+                LoggerHelper.Instance().Log(LogType.Console, $"cmd:{message.mCMD} not find");
             }
         }
 
@@ -162,7 +186,7 @@ namespace Base
             Type realType = type.GetType();
             if (!mMessageTypes.TryGetValue(realType.ToString(), out parser))
             {
-                //Console.WriteLine($"faild 未找到:{type} 对应的 Parser");
+                //LoggerHelper.Instance().Log(LogType.Console, $"faild 未找到:{type} 对应的 Parser");
             }
             return parser;
         }
@@ -177,11 +201,11 @@ namespace Base
             // Person -> ParseFrom 方法的映射 (根据Person 找到 反序列化根据Person的方法)
             if (mMessageTypes.TryAdd(messageTypeName, messageParser))
             {
-                //Console.WriteLine($"AddMessageParser type:{messageTypeName} success");
+                //LoggerHelper.Instance().Log(LogType.Console, $"AddMessageParser type:{messageTypeName} success");
             }
             else
             {
-                Console.WriteLine($"AddMessageParser type:{messageTypeName} faild");
+                LoggerHelper.Instance().Log(LogType.Console, $"AddMessageParser type:{messageTypeName} faild");
             }
         }
     }

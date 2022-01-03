@@ -8,22 +8,37 @@ namespace Base
 
         private static readonly object mMutex = new object();
 
-        public static T Instance()
+        protected Singletion()
         {
-            if (null == mInstance)
-            {
-                lock (mMutex)
-                {
-                    if (null == mInstance)
-                    {
-                        mInstance = new T();
-                    }
-                }
-            }
 
-            return mInstance;
         }
 
+        public static T Instance()
+        {
+            return InstanceS;
+        }
 
+        public static T InstanceS
+        {
+            get
+            {
+                if (null == mInstance)
+                {
+                    lock (mMutex)
+                    {
+                        if (null == mInstance)
+                        {
+                            mInstance = new T();
+                        }
+                    }
+                }
+
+                return mInstance;
+            }
+            private set
+            {
+
+            }
+        }
     }
 }

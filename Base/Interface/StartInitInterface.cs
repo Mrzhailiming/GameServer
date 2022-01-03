@@ -15,15 +15,15 @@ namespace Base.Interface
         /// </summary>
         InitType InitType { get; }
         /// <summary>
-        /// 要执行 init 的实例
+        /// 要执行 init 的实例 好像没用了...
         /// </summary>
-        object Instance { get;}
+        object Instance { get; }
 
         /// <summary>
         /// 自定义参数 (参数咋传啊)
         /// </summary>
         /// <param name="param"></param>
-        void Init(/*params string[] param*/);
+        void Init(params string[] param);
     }
 
 

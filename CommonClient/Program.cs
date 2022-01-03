@@ -1,6 +1,7 @@
 ﻿namespace Client
 {
     using System;
+    using System.IO;
     using System.Net;
     using System.Threading.Tasks;
     using Base;
@@ -32,7 +33,7 @@
         public static void InitClientServer()
         {
             // 新方式, 自动调用, 只需要继承 StartInitInterface 接口即可
-            StartInitManager.Instance().StartInit(InitType.Client);
+            StartInitManager.Instance().StartInit(InitType.Client, Directory.GetCurrentDirectory());
 
             //TickManager.Instance().RunAsync();
             //CMDHelperManager.Instance().Init();

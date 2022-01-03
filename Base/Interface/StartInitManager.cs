@@ -1,14 +1,19 @@
-﻿using System;
+﻿using Base.Logger;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
 namespace Base.Interface
 {
+    /// <summary>
+    /// 通过反射获取程序集所有继承 StartInitInterface 的类
+    /// 调用 Init 函数
+    /// </summary>
     public class StartInitManager : Singletion<StartInitManager>
     {
 
-        Dictionary<PropertyInfo, MethodInfo> mInstance2Method = new Dictionary<PropertyInfo, MethodInfo>();
+        //Dictionary<PropertyInfo, MethodInfo> mInstance2Method = new Dictionary<PropertyInfo, MethodInfo>();
 
         List<StartInitInterface> mStartInitInterface = new List<StartInitInterface>();
 
@@ -20,32 +25,32 @@ namespace Base.Interface
         /// <summary>
         /// 服务器客户端都在用, 要不要区分一下...
         /// </summary>
-        public void StartInit(InitType initType)
+        public void StartInit(InitType initType, params string[] param)
         {
             mInitType = initType;
 
-            Init();
+            Init(param[0]);
 
-            RunAllInit();
+            RunAllInit(param);
         }
 
 
-        private void RunAllInit()
+        private void RunAllInit(params string[] param)
         {
-            foreach(var instance in mStartInitInterface)
+            foreach (var instance in mStartInitInterface)
             {
-                instance.Init();
-                Console.WriteLine($"init {instance}");
+                instance.Init(param);
+                LoggerHelper.Instance().Log(LogType.Console, $"init {instance}");
             }
         }
 
-        private void Init()
+        private void Init(string dllsPath)
         {
-            List<string> dlls = GetDlls();
+            List<string> dlls = GetDlls(dllsPath);
 
             if (null == dlls || dlls.Count <= 0)
             {
-                Console.WriteLine($"not find any dll");
+                LoggerHelper.Instance().Log(LogType.Console, $"not find any dll");
                 return;
             }
 
@@ -56,12 +61,9 @@ namespace Base.Interface
         }
 
 
-        private List<string> GetDlls()
+        private List<string> GetDlls(string dllsPath)
         {
-            string exePath = Directory.GetCurrentDirectory();
-
-            string[] files = Directory.GetFiles(exePath);
-
+            string[] files = Directory.GetFiles(dllsPath);
 
             List<string> dlls = new List<string>();
             foreach (string file in files)
@@ -71,9 +73,11 @@ namespace Base.Interface
                 if (".dll" == ext)
                 {
                     dlls.Add(file);
+                    LoggerHelper.Instance().Log(LogType.Info, $"add dll {file}");
                 }
             }
 
+            LoggerHelper.Instance().Log(LogType.Info, $"add dll sucess path:{dllsPath}");
             return dlls;
         }
 
@@ -82,21 +86,21 @@ namespace Base.Interface
         {
             if (!File.Exists(dllName))
             {
-                Console.WriteLine($"not find dll:{dllName}");
+                LoggerHelper.Instance().Log(LogType.Console, $"not find dll:{dllName}");
                 return;
             }
 
             var assembly = Assembly.LoadFrom(dllName);
             if (null == assembly)
             {
-                Console.WriteLine($"Assembly.LoadFrom dll is null:{dllName}");
+                LoggerHelper.Instance().Log(LogType.Console, $"Assembly.LoadFrom dll is null:{dllName}");
                 return;
             }
 
             var types = assembly.GetTypes();
             if (null == types)
             {
-                Console.WriteLine($"assembly.GetTypes is null:{dllName}");
+                LoggerHelper.Instance().Log(LogType.Console, $"assembly.GetTypes is null:{dllName}");
                 return;
             }
 
@@ -142,34 +146,43 @@ namespace Base.Interface
             PropertyInfo[] Propertys = type.GetProperties(flags);
             if (null == Propertys || Propertys.Length < 1)
             {
-                Console.WriteLine($"ProcessType {type} has no property");
+                LoggerHelper.Instance().Log(LogType.Console, $"ProcessType {type} has no property");
             }
 
             StartInitInterface Instance = null;
             InitType initType = InitType.Both;
-            foreach (PropertyInfo property in Propertys)
-            {
-                // 找到
-                if (property.Name.Contains("StartInitInterface.Instance"))
-                {
-                    // 获取属性值
-                    var ret = property.GetValue(Activator.CreateInstance(type), null);
-                    Instance = (StartInitInterface)ret;
-                    continue;
-                }
 
-                if (property.Name.Contains("InitType"))
-                {
-                    var ret = property.GetValue(Activator.CreateInstance(type), null);
-                    initType = (InitType)ret;
-                    continue;
-                }
+            if (null == type.BaseType.GetProperty("InstanceS")
+                || null == type.GetProperty("InitType"))
+            {
+                return;
             }
+
+            Instance = (StartInitInterface)type.BaseType.GetProperty("InstanceS").GetValue(null);
+            initType = (InitType)type.GetProperty("InitType").GetValue(Instance);
+            //foreach (PropertyInfo property in Propertys)
+            //{
+            //    // 找到
+            //    if (property.Name.Contains("StartInitInterface.Instance"))
+            //    {
+            //        // 获取属性值
+            //        var ret = property.GetValue(null);
+            //        Instance = (StartInitInterface)ret;
+            //        continue;
+            //    }
+
+            //    if (property.Name.Contains("InitType"))
+            //    {
+            //        var ret = property.GetValue(null);
+            //        initType = (InitType)ret;
+            //        continue;
+            //    }
+            //}
 
             // 没找到静态实例 返回
             if (null == Instance)
             {
-                Console.WriteLine($"ProcessType {type} has no static Instance");
+                LoggerHelper.Instance().Log(LogType.Console, $"ProcessType {type} has no static Instance");
                 return;
             }
 
