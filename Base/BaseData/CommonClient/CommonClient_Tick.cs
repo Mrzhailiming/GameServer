@@ -40,7 +40,7 @@ namespace Base.BaseData
         private bool Update(long time)
         {
             mClientTickInfos.DoTick(time);
-            //Console.WriteLine($"client {Name} update {(new DateTimeOffset(DateTime.Now)).ToUnixTimeMilliseconds()}");
+            //LoggerHelper.Instance().Log(LogType.Console, $"client {Name} update {(new DateTimeOffset(DateTime.Now)).ToUnixTimeMilliseconds()}");
             return true;
         }
     }

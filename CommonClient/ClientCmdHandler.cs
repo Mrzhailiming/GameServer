@@ -82,7 +82,7 @@ namespace Handler.CmdHandlers
                 // 
             }
 
-            Console.WriteLine($"登录成功");
+            LoggerHelper.Instance().Log(LogType.Console, $"登录成功");
 
             // 开启心跳
             TickManager.Instance().AddTickInfo(new TickInfo(HeartBeatHandler, 1 * 1000, null));
@@ -100,7 +100,7 @@ namespace Handler.CmdHandlers
             };
 
             client.Send(matchMsg);
-            Console.WriteLine($"开始匹配...");
+            LoggerHelper.Instance().Log(LogType.Console, $"开始匹配...");
         }
 
 

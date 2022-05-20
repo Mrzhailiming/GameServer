@@ -12,6 +12,7 @@ namespace Base.Logger
     public enum LogType
     {
         Console,
+        Info,
         Exception,
         HeartBeat,
     }

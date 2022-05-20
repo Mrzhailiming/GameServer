@@ -13,6 +13,7 @@ namespace Server
     using DotNetty.Transport.Channels.Sockets;
     using global::Handler;
     using System;
+    using System.IO;
     using System.Threading.Tasks;
 
     class Program
@@ -47,7 +48,7 @@ namespace Server
 
                 IChannel bootstrapChannel = await bootstrap.BindAsync(8888);
 
-                //Console.WriteLine("key to quit");
+                //LoggerHelper.Instance().Log(LogType.Console, "key to quit");
                 //Console.ReadKey();
 
                 //await bootstrapChannel.CloseAsync();
@@ -68,7 +69,7 @@ namespace Server
         public static void InitServer()
         {
             // 新方式, 自动调用, 只需要继承 StartInitInterface 接口即可
-            StartInitManager.Instance().StartInit(InitType.Server);
+            StartInitManager.Instance().StartInit(InitType.Server, Directory.GetCurrentDirectory());
 
             // 旧方式 每个类需要初始化的时候,都需要主动调用, 太麻烦
             //CMDHelperManager.Instance().Init();

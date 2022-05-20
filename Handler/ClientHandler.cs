@@ -2,6 +2,7 @@
 using Base.BaseData;
 using Base.Client;
 using Base.DataHelper;
+using Base.Logger;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
@@ -38,7 +39,7 @@ namespace Handler
         }
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
-            Console.WriteLine("connect success begin login");
+            LoggerHelper.Instance().Log(LogType.Console, "connect success begin login");
             LogIn(ctx);
 
             // 设置自己连接的 server
@@ -53,7 +54,7 @@ namespace Handler
 
         protected override void ChannelRead0(IChannelHandlerContext ctx, CommonMessage msg)
         {
-            //Console.WriteLine($"recv from server success {msg.mCMD}");
+            //LoggerHelper.Instance().Log(LogType.Console, $"recv from server success {msg.mCMD}");
 
             CMDHelperManager.Instance().FireClient(ctx, msg);
         }

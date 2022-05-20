@@ -1,5 +1,6 @@
 ﻿using Base.BaseData;
 using Base.DataHelper;
+using Base.Logger;
 using Base.Tick;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
@@ -40,14 +41,14 @@ namespace Base
         {
             mRoomTickInfos = new TickInfos(this);
             TickManager.Instance().AddTickInfo(new TickInfo(Gaming, 1 * 1000, mRoomTickInfos));
-            Console.WriteLine($"begin Begin Game Tick");
+            LoggerHelper.Instance().Log(LogType.Console, $"begin Begin Game Tick");
         }
 
         public bool Gaming(long tick)
         {
             mRoomTickInfos.DoTick(tick);
 
-            Console.WriteLine($"Gaming Tick");
+            LoggerHelper.Instance().Log(LogType.Console, $"Gaming Tick");
             return true;
         }
 
@@ -64,7 +65,7 @@ namespace Base
                 Name = ctx.Channel.RemoteAddress.ToString()
             });
 
-            //Console.WriteLine($"roomserver Add roomClient {ctx.Channel.RemoteAddress}");
+            //LoggerHelper.Instance().Log(LogType.Console, $"roomserver Add roomClient {ctx.Channel.RemoteAddress}");
         }
 
         /// <summary>
@@ -75,7 +76,7 @@ namespace Base
         {
             mOnLineClientDic.TryAdd(client.ctx, client);
 
-            //Console.WriteLine($"roomserver roomClient login success Address:{client.ctx.Channel.RemoteAddress}");
+            //LoggerHelper.Instance().Log(LogType.Console, $"roomserver roomClient login success Address:{client.ctx.Channel.RemoteAddress}");
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace Base
 
             if (!mClientDic.TryGetValue(ctx, out client))
             {
-                Console.WriteLine($"not find Client {ctx.Channel.RemoteAddress}");
+                LoggerHelper.Instance().Log(LogType.Console, $"not find Client {ctx.Channel.RemoteAddress}");
             }
 
             return client;

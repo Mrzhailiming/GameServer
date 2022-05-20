@@ -1,11 +1,13 @@
 ﻿namespace Client
 {
     using System;
+    using System.IO;
     using System.Net;
     using System.Threading.Tasks;
     using Base;
     using Base.Client;
     using Base.Interface;
+    using Base.Logger;
     using Base.Tick;
 
     class Program
@@ -26,13 +28,13 @@
             IPEndPoint EndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), Convert.ToInt32(ClientInfo.MyClientServerPort));
             ClientBootStrap.Instance().RunClientRoomServerAsync(EndPoint);
 
-            Console.WriteLine($"本房间服务器的监听端口:{n}");
+            LoggerHelper.Instance().Log(LogType.Console, $"本房间服务器的监听端口:{n}");
         }
 
         public static void InitClientServer()
         {
             // 新方式, 自动调用, 只需要继承 StartInitInterface 接口即可
-            StartInitManager.Instance().StartInit(InitType.Client);
+            StartInitManager.Instance().StartInit(InitType.Client, Directory.GetCurrentDirectory());
 
             //TickManager.Instance().RunAsync();
             //CMDHelperManager.Instance().Init();

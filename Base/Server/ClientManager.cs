@@ -1,6 +1,7 @@
 ﻿using Base.BaseData;
 using Base.DataHelper;
 using Base.Interface;
+using Base.Logger;
 using Base.Tick;
 using ConnmonMessage;
 using DotNetty.Transport.Channels;
@@ -35,22 +36,13 @@ namespace Base
         private ConcurrentDictionary<IChannelHandlerContext, CommonClient> mOffLineClientDic =
             new ConcurrentDictionary<IChannelHandlerContext, CommonClient>();
 
-        /// <summary>
-        /// 正在匹配的玩家
-        /// </summary>
-        private LinkedList<CommonClient> mOnMatchClients =
-            new LinkedList<CommonClient>();
-
         private TickInfos mServerTickInfos;
         private void BeginTick()
         {
             mServerTickInfos = new TickInfos(this);
-            // 增加匹配的tick
-            mServerTickInfos.AddTick(new TickInfo(Match, 3 * 1000, mServerTickInfos));
             mServerTickInfos.AddTick(new TickInfo(HeartBeat, 1 * 1000, mServerTickInfos));
 
             TickManager.Instance().AddTickInfo(new TickInfo(Update, 1 * 1000, mServerTickInfos));
-            Console.WriteLine($"begin match tick");
         }
 
         /// <summary>
@@ -66,7 +58,7 @@ namespace Base
                 Name = ctx.Channel.RemoteAddress.ToString()
             });
 
-            Console.WriteLine($"Add Client {ctx.Channel.RemoteAddress}");
+            LoggerHelper.Instance().Log(LogType.Console, $"Add Client {ctx.Channel.RemoteAddress}");
         }
 
         /// <summary>
@@ -77,7 +69,7 @@ namespace Base
         {
             mOnLineClientDic.TryAdd(client.ctx, client);
 
-            Console.WriteLine($"Client login success Address:{client.ctx.Channel.RemoteAddress}");
+            LoggerHelper.Instance().Log(LogType.Console, $"Client login success Address:{client.ctx.Channel.RemoteAddress}");
         }
 
         /// <summary>
@@ -91,23 +83,27 @@ namespace Base
 
             if (!mClientDic.TryGetValue(ctx, out client))
             {
-                //Console.WriteLine($"not find Client {ctx.Channel.RemoteAddress}");
+                LoggerHelper.Instance().Log(LogType.Console, $"not find Client {ctx.Channel.RemoteAddress}");
             }
 
             return client;
         }
 
+        /// <summary>
+        /// 登录成功的玩家
+        /// </summary>
+        /// <returns></returns>
         public ConcurrentDictionary<IChannelHandlerContext, CommonClient> GetAllClient()
         {
             return mOnLineClientDic;
         }
-
-        public const int PerMatchNum = 4;
-
-
-        public void AddMatchClient(CommonClient client)
+        /// <summary>
+        /// 离线玩家
+        /// </summary>
+        /// <returns></returns>
+        public ConcurrentDictionary<IChannelHandlerContext, CommonClient> GetAllOfflineClient()
         {
-            mOnMatchClients.AddLast(client);
+            return mOffLineClientDic;
         }
 
         bool Update(long ticks)
@@ -135,79 +131,6 @@ namespace Base
                     mOffLineClientDic.TryAdd(client.ctx, client);
                 }
             }
-            return true;
-        }
-
-        bool Match(long ticks)
-        {
-            if (mOnMatchClients.Count >= PerMatchNum)
-            {
-                List<string> ips = new List<string>();
-                List<string> ports = new List<string>();
-
-                LinkedListNode<CommonClient> node = mOnMatchClients.First;
-
-                List<CommonClient> RedTeam = new List<CommonClient>();
-                List<CommonClient> BlueTeam = new List<CommonClient>();
-
-                for (int count = 0; count < PerMatchNum; ++count)
-                {
-                    if (null == node)
-                    {
-                        break;
-                    }
-
-                    if (count % 2 == 0)
-                    {
-                        RedTeam.Add(node.Value);
-                    }
-                    else
-                    {
-                        BlueTeam.Add(node.Value);
-                    }
-
-                    var RemoveNode = node;
-                    node = node.Next;
-
-                    mOnMatchClients.Remove(RemoveNode);
-                }
-
-                StringBuilder stringBuilder = new StringBuilder();
-
-                foreach (CommonClient client in RedTeam)
-                {
-                    stringBuilder.Append(client.RoomServerIP).Append("&");
-                    stringBuilder.Append(client.RoomServerPort).Append("&");
-                    stringBuilder.Append("Red").Append("|");
-                }
-
-                foreach (CommonClient client in BlueTeam)
-                {
-                    stringBuilder.Append(client.RoomServerIP).Append("&");
-                    stringBuilder.Append(client.RoomServerPort).Append("&");
-                    stringBuilder.Append("Blue").Append("|");
-                }
-
-                SCMatch scJoinRoom = new SCMatch()
-                {
-                    AllClient = stringBuilder.ToString()
-                };
-
-                byte[] result = MessageBufHelper.GetBytes(scJoinRoom);
-
-                CommonMessage message = new CommonMessage()
-                {
-                    mCMD = CMDS.SCMatch,
-                    mMessageBuffer = result
-                };
-
-                foreach (var client in mClientDic.Values)
-                {
-                    client.Send(message);
-                }
-                Console.WriteLine($"match success");
-            }
-
             return true;
         }
 

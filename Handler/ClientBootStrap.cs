@@ -94,7 +94,7 @@ namespace Base
                     Groups = new List<MultithreadEventLoopGroup>() { bossGroup, workerGroup }
                 };
 
-                //Console.WriteLine("key to quit");
+                //LoggerHelper.Instance().Log(LogType.Console, "key to quit");
                 //Console.ReadKey();
 
                 //await bootstrapChannel.CloseAsync();

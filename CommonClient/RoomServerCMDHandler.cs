@@ -3,6 +3,7 @@ using Base.Attributes;
 using Base.BaseData;
 using Base.Client;
 using Base.DataHelper;
+using Base.Logger;
 using ConnmonMessage;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace Handler.CmdHandlers
         [CmdHandlerAttribute(CmdID = CMDS.RCRSFrameSynchronization)]
         public static void ProcessFrameSynchronization(CommonClient client, CommonMessage message)
         {
-            Console.WriteLine($"roomserver recv roomclient FrameSynchronization");
+            LoggerHelper.Instance().Log(LogType.Console, $"roomserver recv roomclient FrameSynchronization");
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace Handler.CmdHandlers
             // RoomServerJionRoomRsp 发回复的
             client.Send(commonMessage);
 
-            Console.WriteLine($"RoomServer 回复 RSRCJionRoomRsp roleid:{client.RoleID}");
+            LoggerHelper.Instance().Log(LogType.Console, $"RoomServer 回复 RSRCJionRoomRsp roleid:{client.RoleID}");
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace Handler.CmdHandlers
                 mMessageBuffer = result
             };
 
-            Console.WriteLine($"roome server 回复 roomclient 登录结果:{client.ctx.Channel.RemoteAddress}");
+            LoggerHelper.Instance().Log(LogType.Console, $"roome server 回复 roomclient 登录结果:{client.ctx.Channel.RemoteAddress}");
             client.Send(message);
         }
     }
