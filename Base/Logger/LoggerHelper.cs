@@ -61,6 +61,7 @@ namespace Base.Logger
         }
         public void Log(LogType logType, string msg)
         {
+            Console.WriteLine($"{DateTime.Now} {logType} {msg}");
             mMessageQueue.Enqueue(new LogMessage(logType, msg));
         }
 
