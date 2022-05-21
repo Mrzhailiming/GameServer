@@ -2,14 +2,23 @@
 using Base.Logger;
 using Entity;
 using MySystem;
-using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Server
 {
     public class MyServer : Singletion<MyServer>
     {
         public List<ISystem> mSystems = new List<ISystem>();
+
+        public SocketSystem mSocketSystem = new SocketSystem();
+
+        public void Run(IEntity entity, IPEndPoint iPEndPoint, SocketType socketType, ProtocolType protocolType
+            , string ip, int port, int backlog)
+        {
+            mSocketSystem.RunServer(entity, iPEndPoint, socketType, protocolType, ip, port, backlog);
+        }
 
         public void AddSystem(ISystem system)
         {
@@ -19,9 +28,9 @@ namespace Server
 
         public void Tick(long tick)
         {
-            foreach(ISystem system in mSystems)
+            foreach (ISystem system in mSystems)
             {
-                foreach(Entity.IEntity entity in EntityManager.Instance())
+                foreach (Entity.IEntity entity in EntityManager.Instance())
                 {
                     system.Tick(tick, entity);
                 }

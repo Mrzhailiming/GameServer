@@ -16,7 +16,7 @@ namespace Entity
         public void AddEntity(IEntity entity, long id)
         {
             bool res = mEtities.TryAdd(id, entity);
-            LoggerHelper.Instance().Log(LogType.Console, $"AddEntity id:{id} result:{res}");
+            LoggerHelper.Instance().Log(LogType.Console, $"EntityManager AddEntity id:{id} type:{entity} result:{res}");
         }
         public IEnumerator GetEnumerator()
         {
