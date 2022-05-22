@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Base\Base.csproj" />
     <ProjectReference Include="..\ECS\Entity\Entity.csproj" />
+    <ProjectReference Include="..\ECS\Singleton\Singleton.csproj" />
     <ProjectReference Include="..\ECS\System\MySystem.csproj" />
   </ItemGroup>
 

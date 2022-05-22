@@ -1,7 +1,9 @@
 ﻿using Base.Logger;
 using Entity;
 using Entity.Component;
+using Singleton.Manager;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,6 +12,17 @@ namespace MySystem
 {
     public class SocketSystem
     {
+        public void Init()
+        {
+            // 初始化缓冲区
+            for (int index = 0; index < BufferManager.MaxConnect; ++index)
+            {
+                BufferManager.Instance().SendBufUseMap.Add(index, false);
+                BufferManager.Instance().RecvBufUseMap.Add(index, false);
+            }
+
+        }
+
         public void RunServer(IEntity entity, IPEndPoint iPEndPoint, SocketType socketType, ProtocolType protocolType
             , string ip, int port, int backlog)
         {
@@ -41,7 +54,7 @@ namespace MySystem
 
 
         public void RunClient(IEntity entity, IPEndPoint iPEndPoint, SocketType socketType, ProtocolType protocolType
-            , string ip, int port, object userToken)
+            , string ip, int port)
         {
             SocketEntity socketEntity = entity as SocketEntity;
             if (null == socketEntity)
@@ -61,7 +74,7 @@ namespace MySystem
 
             CreateSocket(socketComponent, iPEndPoint, socketType, protocolType);
 
-            Connect(socketComponent, iPEndPoint, userToken);
+            Connect(socketComponent, iPEndPoint);
         }
 
 
@@ -71,15 +84,22 @@ namespace MySystem
             socketComponent.mSocket = new Socket(iPEndPoint.AddressFamily, socketType, protocolType);
         }
 
-        public void Connect(SocketComponent socketComponent, IPEndPoint iPEndPoint, object userToken)
+        public void Connect(SocketComponent socketComponent, IPEndPoint iPEndPoint)
         {
             SocketAsyncEventArgs socketAsyncEventArgs = new SocketAsyncEventArgs();
-            socketAsyncEventArgs.SetBuffer(new byte[1024 * 1024], 0, 1024 * 1024);
+
             socketAsyncEventArgs.Completed += new EventHandler<SocketAsyncEventArgs>(Connect_Completed);
             socketAsyncEventArgs.RemoteEndPoint = iPEndPoint;
-            socketAsyncEventArgs.UserToken = userToken;
-
+            socketAsyncEventArgs.UserToken = socketComponent;
             socketComponent.mSocketArg = socketAsyncEventArgs;
+
+            // 主动连接 设置sendbuf
+            if (!PopBuf(socketComponent, socketAsyncEventArgs))
+            {
+                LoggerHelper.Instance().Log(LogType.Console, $"SocketSystem Connect PopBuf false");
+                return;
+            }
+
             socketComponent.mSocket.ConnectAsync(socketAsyncEventArgs);
         }
 
@@ -133,17 +153,23 @@ namespace MySystem
 
             // 接收到新链接
             SocketAsyncEventArgs clientArg = new SocketAsyncEventArgs();
-            // 设置结束缓冲区
-            clientArg.SetBuffer(new byte[1024 * 1024], 0, 1024 * 1024);
 
             SocketComponent socketComponent = new SocketComponent();
             socketComponent.mSocketArg = clientArg;
             socketComponent.mSocket = e.AcceptSocket;
+            socketComponent.mConnectType = ConnectType.Accept;
 
             clientArg.UserToken = socketComponent;
             clientArg.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
 
             e.AcceptSocket = null;
+
+            // 被动连接 设置 recvbuf
+            if (!PopBuf(socketComponent, clientArg))
+            {
+                LoggerHelper.Instance().Log(LogType.Console, $"SocketSystem ProcessAccept PopBuf false");
+                return;
+            }
 
             bool isAsync = socketComponent.mSocket.ReceiveAsync(socketComponent.mSocketArg);
             if (!isAsync)
@@ -176,7 +202,7 @@ namespace MySystem
             {
                 LoggerHelper.Instance().Log(LogType.Console, $"client ProcessConnect SocketComponent != null");
             }
-
+            socketComponent.mSocket = e.ConnectSocket;
             socketComponent.mSocketInvild = true;
         }
         public void IO_Completed(object sender, SocketAsyncEventArgs e)
@@ -206,19 +232,26 @@ namespace MySystem
 
                 // 继续异步接收
                 SocketComponent socketComponent = e.UserToken as SocketComponent;
-                socketComponent.mSocket.ReceiveAsync(socketComponent.mSocketArg);
+                // 再次设置接收缓冲区
+                socketComponent.mSocketArg.SetBuffer(socketComponent.mSocketArg.Offset, 1024 * 1024);
+                bool isAsync = socketComponent.mSocket.ReceiveAsync(socketComponent.mSocketArg);
+                if (!isAsync)
+                {
+                    ProcessReceive(e);
+                }
             }
             else
             {
                 if (e.SocketError == SocketError.SocketError)
                 {
-                    Close(e);
                     LoggerHelper.Instance().Log(LogType.Console, "ProcessReceive() SocketError");
                 }
                 else
                 {
                     LoggerHelper.Instance().Log(LogType.Console, $"ProcessReceive ReceiveAsync SocketError:{e.SocketError}");
                 }
+
+                Close(e);
             }
         }
         public void ProcessSend(SocketAsyncEventArgs e)
@@ -228,7 +261,7 @@ namespace MySystem
                 LoggerHelper.Instance().Log(LogType.Console, "ProcessSend()");
 
                 // 恢复缓冲区的大小
-                e.SetBuffer(0, 1024 * 1024);
+                e.SetBuffer(e.Offset, 1024 * 1024);
             }
             else
             {
@@ -241,15 +274,132 @@ namespace MySystem
         {
             try
             {
-                socketAsyncEventArgs.ConnectSocket.Shutdown(SocketShutdown.Send);
+                SocketComponent socketComponent = socketAsyncEventArgs.UserToken as SocketComponent;
+                if (null == socketComponent)
+                {
+                    LoggerHelper.Instance().Log(LogType.Console, "SocketSystem Close PushBuf SocketComponent null");
+                    return;
+                }
+
+                PushBuf(socketComponent);
+
+                socketComponent.mSocket?.Shutdown(SocketShutdown.Send);
+                socketComponent.mSocket?.Close();
             }
             catch (Exception ex)
             {
                 LoggerHelper.Instance().Log(LogType.Exception, ex.ToString());
             }
-            socketAsyncEventArgs.ConnectSocket.Close();
-
         }
+
+        #region 管理缓冲区
+        public void PushBuf(SocketAsyncEventArgs socketAsyncEventArgs)
+        {
+            SocketComponent socketComponent = socketAsyncEventArgs.UserToken as SocketComponent;
+            if (null == socketComponent)
+            {
+                LoggerHelper.Instance().Log(LogType.Console, "SocketSystem Close PushBuf SocketComponent null");
+                return;
+            }
+
+            PushBuf(socketComponent);
+        }
+        public void PushBuf(SocketComponent socketComponent)
+        {
+            try
+            {
+                Dictionary<int, bool> map;
+                if (socketComponent.mConnectType == ConnectType.Connect)
+                {
+                    map = BufferManager.Instance().SendBufUseMap;
+                }
+                else if (socketComponent.mConnectType == ConnectType.Accept)
+                {
+                    map = BufferManager.Instance().RecvBufUseMap;
+                }
+                else
+                {
+                    LoggerHelper.Instance().Log(LogType.Console, "SocketSystem PushBuf ConnectType undefined");
+                    return;
+                }
+
+                int freeIndex = socketComponent.mBufOffset / BufferManager.PerBufLen;
+
+                map[freeIndex] = false;
+
+                LoggerHelper.Instance().Log(LogType.Console, $"SocketSystem PushBuf freeIndex:{freeIndex}");
+            }
+            catch (Exception ex)
+            {
+                LoggerHelper.Instance().Log(LogType.Exception, $"SocketSystem PushBuf ex:{ex}");
+            }
+        }
+
+        public bool PopBuf(SocketComponent socketComponent, SocketAsyncEventArgs socketAsyncEventArgs)
+        {
+            try
+            {
+                Dictionary<int, bool> map;
+                byte[] buf;
+                int freeIndex;
+                // 设置发送缓冲区
+                if (socketComponent.mConnectType == ConnectType.Connect)
+                {
+                    map = BufferManager.Instance().SendBufUseMap;
+                    buf = BufferManager.Instance().SendTotalBuffer;
+                }
+                // 设置接收缓冲区
+                else if (socketComponent.mConnectType == ConnectType.Accept)
+                {
+                    map = BufferManager.Instance().RecvBufUseMap;
+                    buf = BufferManager.Instance().RecvTotalBuffer;
+                }
+                else
+                {
+                    LoggerHelper.Instance().Log(LogType.Console, "SocketSystem PopBuf ConnectType undefined");
+                    return false;
+                }
+
+                freeIndex = GetFreeIndex(map);
+                if (freeIndex < 0)
+                {
+                    LoggerHelper.Instance().Log(LogType.Console, "SocketSystem PopBuf buf is full");
+                    return false;
+                }
+                map[freeIndex] = true;
+                int offset = freeIndex * BufferManager.PerBufLen;
+
+                socketAsyncEventArgs.SetBuffer(buf, offset, BufferManager.PerBufLen);
+                socketComponent.mBufOffset = offset;
+                socketComponent.mBufLength = BufferManager.PerBufLen;
+
+                LoggerHelper.Instance().Log(LogType.Console, $"SocketSystem PopBuf freeIndex:{freeIndex}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LoggerHelper.Instance().Log(LogType.Exception, $"SocketSystem PopBuf ex:{ex}");
+                return false;
+            }
+        }
+
+
+        public int GetFreeIndex(Dictionary<int, bool> map)
+        {
+            foreach (var pair in map)
+            {
+                if (pair.Value)
+                {
+                    continue;
+                }
+
+                return pair.Key;
+            }
+
+            return -1;
+        }
+
+        #endregion
     }
 
     public delegate void Asyncdelegate(object sender, SocketAsyncEventArgs e);

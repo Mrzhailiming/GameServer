@@ -3,6 +3,7 @@ using Entity;
 using Entity.Component;
 using MySystem;
 using MySystem.Global;
+using Singleton.Manager;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -17,10 +18,12 @@ namespace TestECSClient
         {
 
             SocketSystem socketSystem = new SocketSystem();
+            socketSystem.Init();
 
             IEntity entity = new SocketEntity();
             SocketComponent socketComponent = new SocketComponent();
             socketComponent.mOwner = entity;
+            socketComponent.mConnectType = ConnectType.Connect;
             entity.AddComponent(typeof(SocketComponent), socketComponent);
 
             string ip = "127.0.0.1";
@@ -29,13 +32,13 @@ namespace TestECSClient
             SocketType socketType = SocketType.Stream;
             ProtocolType protocolType = ProtocolType.Tcp;
 
-            socketSystem.RunClient(entity, iPEndPoint, socketType, protocolType, ip, port, socketComponent);
+            socketSystem.RunClient(entity, iPEndPoint, socketType, protocolType, ip, port);
 
             while (true)
             {
                 if (!socketComponent.mSocketInvild)
                 {
-                    Thread.Sleep(1000 * 2);
+                    Thread.Sleep(1000 * 1);
                 }
                 else
                 {
@@ -43,7 +46,7 @@ namespace TestECSClient
                 }
             }
 
-            Thread.Sleep(1000 * 2);
+            //Thread.Sleep(1000 * 2);
             string s = "hello";
 
             byte[] buf = Encoding.Default.GetBytes(Str);

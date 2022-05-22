@@ -17,6 +17,8 @@ namespace Server
         public void Run(IEntity entity, IPEndPoint iPEndPoint, SocketType socketType, ProtocolType protocolType
             , string ip, int port, int backlog)
         {
+            mSocketSystem.Init();
+
             mSocketSystem.RunServer(entity, iPEndPoint, socketType, protocolType, ip, port, backlog);
         }
 

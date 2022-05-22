@@ -6,6 +6,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Base\Base.csproj" />
+    <ProjectReference Include="..\Singleton\Singleton.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DataStruct\" />
   </ItemGroup>
 
 </Project>
