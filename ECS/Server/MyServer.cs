@@ -1,14 +1,13 @@
-﻿using Base;
-using Base.Logger;
-using Entity;
+﻿using Entity;
 using MySystem;
+using Singleton;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
 namespace Server
 {
-    public class MyServer : Singletion<MyServer>
+    public class MyServer : Singleton<MyServer>
     {
         public List<ISystem> mSystems = new List<ISystem>();
 

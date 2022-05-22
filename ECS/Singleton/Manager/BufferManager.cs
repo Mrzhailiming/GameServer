@@ -4,11 +4,8 @@ using System.Text;
 
 namespace Singleton.Manager
 {
-    public enum ConnectType
-    {
-        Connect,
-        Accept,
-    }
+    
+
     public class BufferManager : Singleton<BufferManager>
     {
         public byte[] SendTotalBuffer { get; } = new byte[PerBufLen * MaxConnect];

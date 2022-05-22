@@ -1,8 +1,8 @@
 ﻿using Base.Logger;
 using Entity;
 using Entity.Component;
+using Global;
 using MySystem;
-using MySystem.Global;
 using Singleton.Manager;
 using System;
 using System.Net;
@@ -23,7 +23,7 @@ namespace TestECSClient
             IEntity entity = new SocketEntity();
             SocketComponent socketComponent = new SocketComponent();
             socketComponent.mOwner = entity;
-            socketComponent.mConnectType = ConnectType.Connect;
+            socketComponent.mConnectType = ConnectType.Send;
             entity.AddComponent(typeof(SocketComponent), socketComponent);
 
             string ip = "127.0.0.1";
@@ -47,14 +47,10 @@ namespace TestECSClient
             }
 
             //Thread.Sleep(1000 * 2);
-            string s = "hello";
-
-            byte[] buf = Encoding.Default.GetBytes(Str);
-
 
             Console.WriteLine($"str:{Str.Length}");
 
-            Global.SendAsync(socketComponent, buf);
+            SocketSystem.SendAsync(socketComponent, TCPCMDS.TEST, Str);
 
             Console.WriteLine("Hello World!");
             Console.ReadKey();

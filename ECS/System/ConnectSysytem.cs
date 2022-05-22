@@ -1,6 +1,6 @@
-﻿using Base.Logger;
-using Entity;
+﻿using Entity;
 using Entity.Component;
+using Singleton;
 using System;
 
 namespace MySystem

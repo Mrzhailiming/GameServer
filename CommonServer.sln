@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestECSServer", "TestECSSer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestECSClient", "TestECSClient\TestECSClient.csproj", "{16DF945B-B5E9-403A-A7E7-DBEBA997BF2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Singleton", "ECS\Singleton\Singleton.csproj", "{608EED77-E816-42AB-A405-148E6FBA92FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Singleton", "ECS\Singleton\Singleton.csproj", "{608EED77-E816-42AB-A405-148E6FBA92FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Global", "ECS\Global\Global.csproj", "{57F7B823-FA38-478D-B179-DD6363A92C4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +91,10 @@ Global
 		{608EED77-E816-42AB-A405-148E6FBA92FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{608EED77-E816-42AB-A405-148E6FBA92FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{608EED77-E816-42AB-A405-148E6FBA92FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57F7B823-FA38-478D-B179-DD6363A92C4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57F7B823-FA38-478D-B179-DD6363A92C4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57F7B823-FA38-478D-B179-DD6363A92C4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57F7B823-FA38-478D-B179-DD6363A92C4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
