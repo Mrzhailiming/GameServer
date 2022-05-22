@@ -298,11 +298,11 @@ namespace MySystem
             {
                 if (e.SocketError == SocketError.SocketError)
                 {
-                    LoggerHelper.Instance().Log(LogType.Console, "ProcessReceive() SocketError");
+                    LoggerHelper.Instance().Log(LogType.Console, "ProcessReceive() ReceiveAsync failed SocketError");
                 }
                 else
                 {
-                    LoggerHelper.Instance().Log(LogType.Console, $"ProcessReceive ReceiveAsync SocketError:{e.SocketError}");
+                    LoggerHelper.Instance().Log(LogType.Console, $"ProcessReceive ReceiveAsync  failed SocketError:{e.SocketError}");
                 }
 
                 Close(e);
